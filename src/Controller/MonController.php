@@ -14,6 +14,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class MonController extends AbstractController
 {
@@ -31,7 +32,7 @@ class MonController extends AbstractController
     {
         $modeleTests = $repository->findAll();
         // dd($modeleTests);
-        $jsonmodeleTests = $serializer->serialize($modeleTests,'json');
+        $jsonmodeleTests = $serializer->serialize($modeleTests,'json', ["groups"=> "GetmodeleTests"]);
          return new JsonResponse($jsonmodeleTests, Response::HTTP_OK,[],true);
         // return $this->json([
         //     'message' => 'Welcome to your new controller!',
@@ -82,15 +83,21 @@ class MonController extends AbstractController
     }
     //mis a jour  
     #[Route('/api/monControllerT/{id}', name: 'modeleTests.update',methods:["PATCH","PUT"])]
-    public function updateModeleUnique(int  $id, Request $request, ModeleTestRepository $repository,EntityManagerInterface $entityManager ,SerializerInterface $serializer ): JsonResponse
+    public function updateModeleUnique(int  $id,ValidatorInterface $validator, Request $request, ModeleTestRepository $repository,EntityManagerInterface $entityManager ,SerializerInterface $serializer ): JsonResponse
     {
         $modeleTest = $repository->find($id);
         $updateModeleTest = $serializer->deserialize($request->getContent(),ModeleTest::class,'json',[AbstractNormalizer::OBJECT_TO_POPULATE =>$modeleTest]); 
         $updateModeleTest->setCreateAt(new DateTimeImmutable());
         $updateModeleTest->setUpdateAt(new DateTimeImmutable());
-        $entityManager->persist($modeleTest);
-        $entityManager->flush();
+        $erros = $validator->validate($updateModeleTest);
+        if($erros->count()>0){
+            return new JsonResponse($serializer->serialize($erros, 'json'), Response::HTTP_BAD_REQUEST, [], true);
+        }else{
+            $entityManager->persist($modeleTest);
+            $entityManager->flush();
+            return new JsonResponse(null, Response::HTTP_NO_CONTENT,[]);
+        }
 
-         return new JsonResponse(null, Response::HTTP_NO_CONTENT,[]);
+         
     }
 }

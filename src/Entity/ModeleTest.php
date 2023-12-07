@@ -2,9 +2,10 @@
 
 namespace App\Entity;
 
-use App\Repository\ModeleTestRepository;
 use Doctrine\ORM\Mapping as ORM;
-
+use App\Repository\ModeleTestRepository;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: ModeleTestRepository::class)]
 class ModeleTest
 {
@@ -14,6 +15,8 @@ class ModeleTest
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups("GetmodeleTests")]
+    #[Assert\NotBlank(message: "une erreur est survenue")]
     private ?string $name = null;
 
     #[ORM\Column(nullable: true)]

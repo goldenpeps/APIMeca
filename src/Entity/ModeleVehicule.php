@@ -23,19 +23,15 @@ class ModeleVehicule
 
     #[ORM\Column(length: 255)]
     private ?string $Version = null;
-
-    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'refference_ModeleVehicule')]
-    private ?self $id_MarqueVehicule = null;
-
-    #[ORM\OneToMany(mappedBy: 'id_MarqueVehicule', targetEntity: self::class)]
-    private Collection $refference_ModeleVehicule;
-
+ 
     #[ORM\ManyToMany(targetEntity: Piece::class, mappedBy: 'Assosiative_PieceModeleVehicule')]
     private Collection $Assosiative_ModeleVehiculePiece;
 
+    #[ORM\ManyToOne(inversedBy: 'referenceModeleVehicules')]
+    private ?MarqueVehicule $id_marqueVehicule = null;
+
     public function __construct()
     {
-        $this->refference_ModeleVehicule = new ArrayCollection();
         $this->Assosiative_ModeleVehiculePiece = new ArrayCollection();
     }
 
@@ -80,47 +76,6 @@ class ModeleVehicule
         return $this;
     }
 
-    public function getIdMarqueVehicule(): ?self
-    {
-        return $this->id_MarqueVehicule;
-    }
-
-    public function setIdMarqueVehicule(?self $id_MarqueVehicule): static
-    {
-        $this->id_MarqueVehicule = $id_MarqueVehicule;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, self>
-     */
-    public function getRefferenceModeleVehicule(): Collection
-    {
-        return $this->refference_ModeleVehicule;
-    }
-
-    public function addRefferenceModeleVehicule(self $refferenceModeleVehicule): static
-    {
-        if (!$this->refference_ModeleVehicule->contains($refferenceModeleVehicule)) {
-            $this->refference_ModeleVehicule->add($refferenceModeleVehicule);
-            $refferenceModeleVehicule->setIdMarqueVehicule($this);
-        }
-
-        return $this;
-    }
-
-    public function removeRefferenceModeleVehicule(self $refferenceModeleVehicule): static
-    {
-        if ($this->refference_ModeleVehicule->removeElement($refferenceModeleVehicule)) {
-            // set the owning side to null (unless already changed)
-            if ($refferenceModeleVehicule->getIdMarqueVehicule() === $this) {
-                $refferenceModeleVehicule->setIdMarqueVehicule(null);
-            }
-        }
-
-        return $this;
-    }
 
     /**
      * @return Collection<int, Piece>
@@ -145,6 +100,18 @@ class ModeleVehicule
         if ($this->Assosiative_ModeleVehiculePiece->removeElement($assosiativeModeleVehiculePiece)) {
             $assosiativeModeleVehiculePiece->removeAssosiativePieceModeleVehicule($this);
         }
+
+        return $this;
+    }
+
+    public function getIdMarqueVehicule(): ?MarqueVehicule
+    {
+        return $this->id_marqueVehicule;
+    }
+
+    public function setIdMarqueVehicule(?MarqueVehicule $id_marqueVehicule): static
+    {
+        $this->id_marqueVehicule = $id_marqueVehicule;
 
         return $this;
     }

@@ -4,6 +4,7 @@ namespace App\Controller;
 
 
 use App\Repository\PieceRepository;
+use App\Entity\Piece;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -35,10 +36,11 @@ class PieceController extends AbstractController
     public function createPiece(Request $request, PieceRepository $repositoryP,EntityManagerInterface $entityManager, UrlGeneratorInterface $interfaceUrl ,SerializerInterface $serializer ): JsonResponse
     {
         $Piece = $serializer->deserialize($request->getContent(),Piece::class,'json');
+        
         $entityManager->persist($Piece);
         $entityManager->flush();
         $jsonPiece = $serializer->serialize($Piece,'json');
-        $localion = $interfaceUrl->generate("Pieces.Get",["id"=>$jsonPiece->getId()],UrlGeneratorInterface::ABSOLUTE_URL);
+        $localion = $interfaceUrl->generate("Pieces.Get",["id"=>$Piece->getId()],UrlGeneratorInterface::ABSOLUTE_URL);
         return new JsonResponse($jsonPiece, Response::HTTP_CREATED,[],true);
     }
 
@@ -58,7 +60,7 @@ class PieceController extends AbstractController
         $updatePiece = $serializer->deserialize($request->getContent(),Piece::class,'json',[AbstractNormalizer::OBJECT_TO_POPULATE =>$Piece]); 
         $entityManager->persist($Piece);
         $entityManager->flush();
-        $jsonPiece = $serializer->serialize($Piece,'json');
+        $jsonPiece = $serializer->serialize($Piece,'json',["groups"=> "GetNom"]);
          return new JsonResponse($jsonPiece, Response::HTTP_OK,[],true);
     }
 }

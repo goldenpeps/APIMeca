@@ -42,7 +42,7 @@ class AutreController extends AbstractController
         #[Route('/api/AutreControllerT/{id}', name: 'monTypeT.Get',methods:["GET"])]
         public function GetModeleUnique(int  $id,MonTypeTRepository $repositoryMonType,  ModeleTestRepository $repositoryModeleTest, SerializerInterface $serializer ): JsonResponse
         {
-            $modeleTest = $repository->find($id);
+            $modeleTest = $repositoryMonType->find($id);
             // dd($modeleTests);
             $jsonmodeleTest = $serializer->serialize($modeleTest,'json');
              return new JsonResponse($jsonmodeleTest, Response::HTTP_OK,[],true);

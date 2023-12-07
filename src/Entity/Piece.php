@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\PieceRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PieceRepository::class)]
@@ -16,6 +17,7 @@ class Piece
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups("GetNom")]
     private ?string $Nom = null;
 
     #[ORM\Column(length: 255)]
