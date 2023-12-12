@@ -15,6 +15,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class AutreController extends AbstractController
     {
@@ -28,6 +29,7 @@ class AutreController extends AbstractController
         }
     
         #[Route('/api/AutreControllerT', name: 'monTypeT.GetAll',methods:["GET"])]
+       
         public function GetAllType(MonTypeTRepository $repository, SerializerInterface $serializer ): JsonResponse
         {
             $monTypeT = $repository->findAll();

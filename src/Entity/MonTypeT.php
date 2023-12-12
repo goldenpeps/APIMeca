@@ -20,6 +20,14 @@ class MonTypeT
 
     #[ORM\OneToMany(mappedBy: 'MonTypeT_id', targetEntity: ModeleTest::class)]
     private Collection $modeleTests;
+    
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $Create_by = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $Update_by = null;
 
     public function __construct()
     {
@@ -69,6 +77,29 @@ class MonTypeT
                 $modeleTest->setMonTypeTId(null);
             }
         }
+
+        return $this;
+    }
+    public function getCreateBy(): ?User
+    {
+        return $this->Create_by;
+    }
+
+    public function setCreateBy(?User $Create_by): static
+    {
+        $this->Create_by = $Create_by;
+
+        return $this;
+    }
+
+    public function getUpdateBy(): ?User
+    {
+        return $this->Update_by;
+    }
+
+    public function setUpdateBy(?User $Update_by): static
+    {
+        $this->Update_by = $Update_by;
 
         return $this;
     }

@@ -2,10 +2,11 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\Collection;
 use App\Repository\ModeleVehiculeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ModeleVehiculeRepository::class)]
 class ModeleVehicule
@@ -16,6 +17,7 @@ class ModeleVehicule
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups("GetNomModele")]
     private ?string $Nom = null;
 
     #[ORM\Column]
@@ -24,10 +26,12 @@ class ModeleVehicule
     #[ORM\Column(length: 255)]
     private ?string $Version = null;
  
-    #[ORM\ManyToMany(targetEntity: Piece::class, mappedBy: 'Assosiative_PieceModeleVehicule')]
+    #[ORM\ManyToMany(targetEntity: Piece::class, mappedBy: 'Assosiative_PieceModeleVehicule')]  
+  
     private Collection $Assosiative_ModeleVehiculePiece;
 
     #[ORM\ManyToOne(inversedBy: 'referenceModeleVehicules')]
+  
     private ?MarqueVehicule $id_marqueVehicule = null;
 
     public function __construct()

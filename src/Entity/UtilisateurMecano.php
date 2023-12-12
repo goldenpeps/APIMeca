@@ -2,10 +2,11 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\Collection;
 use App\Repository\UtilisateurMecanoRepository;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UtilisateurMecanoRepository::class)]
 class UtilisateurMecano
@@ -16,6 +17,7 @@ class UtilisateurMecano
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups("GetNom")]
     private ?string $Nom = null;
 
     #[ORM\Column(length: 255)]
@@ -29,6 +31,15 @@ class UtilisateurMecano
 
     #[ORM\OneToMany(mappedBy: 'Id_utilisateurContrat', targetEntity: Contrat::class)]
     private Collection $ContratReferenceUtilisateurMecano;
+
+    #[ORM\Column]
+    private ?\DateTimeImmutable $Create_at = null;
+
+    #[ORM\Column]
+    private ?\DateTimeImmutable $update_at = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $Status = null;
 
     public function __construct()
     {
@@ -114,6 +125,42 @@ class UtilisateurMecano
                 $contratReferenceUtilisateurMecano->setIdUtilisateurContrat(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCreateAt(): ?\DateTimeImmutable
+    {
+        return $this->Create_at;
+    }
+
+    public function setCreateAt(\DateTimeImmutable $Create_at): static
+    {
+        $this->Create_at = $Create_at;
+
+        return $this;
+    }
+
+    public function getUpdateAt(): ?\DateTimeImmutable
+    {
+        return $this->update_at;
+    }
+
+    public function setUpdateAt(\DateTimeImmutable $update_at): static
+    {
+        $this->update_at = $update_at;
+
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->Status;
+    }
+
+    public function setStatus(string $Status): static
+    {
+        $this->Status = $Status;
 
         return $this;
     }

@@ -30,6 +30,9 @@ class Contrat
     #[ORM\ManyToMany(targetEntity: Piece::class, inversedBy: 'Assosiative_PieceContrat')]
     private Collection $AssosiationContratPiece;
 
+    #[ORM\Column]
+    private ?\DateTimeImmutable $Update_at = null;
+
     public function __construct()
     {
         $this->AssosiationContratPiece = new ArrayCollection();
@@ -108,6 +111,18 @@ class Contrat
     public function removeAssosiationContratPiece(Piece $assosiationContratPiece): static
     {
         $this->AssosiationContratPiece->removeElement($assosiationContratPiece);
+
+        return $this;
+    }
+
+    public function getUpdateAt(): ?\DateTimeImmutable
+    {
+        return $this->Update_at;
+    }
+
+    public function setUpdateAt(\DateTimeImmutable $Update_at): static
+    {
+        $this->Update_at = $Update_at;
 
         return $this;
     }

@@ -5,6 +5,7 @@ namespace App\Controller;
 
 use App\Repository\PieceRepository;
 use App\Entity\Piece;
+use App\Repository\TypePieceRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,13 +34,16 @@ class PieceController extends AbstractController
          return new JsonResponse($jsonPiece, Response::HTTP_OK,[],true);
     }
     #[Route('/api/PieceController', name: 'Pieces.Create',methods:["POST"])]
-    public function createPiece(Request $request, PieceRepository $repositoryP,EntityManagerInterface $entityManager, UrlGeneratorInterface $interfaceUrl ,SerializerInterface $serializer ): JsonResponse
+    public function createPiece(Request $request, TypePieceRepository $repositoryTP,EntityManagerInterface $entityManager, UrlGeneratorInterface $interfaceUrl ,SerializerInterface $serializer ): JsonResponse
     {
         $Piece = $serializer->deserialize($request->getContent(),Piece::class,'json');
-        
+
+        $TypePiece = $repositoryTP->find($request->toArray()['type_piece'] ?? -1);
+        $Piece->setIdTypePiece($TypePiece);
+
         $entityManager->persist($Piece);
         $entityManager->flush();
-        $jsonPiece = $serializer->serialize($Piece,'json');
+        $jsonPiece = $serializer->serialize($Piece,'json',["groups"=> "GetNom"]);
         $localion = $interfaceUrl->generate("Pieces.Get",["id"=>$Piece->getId()],UrlGeneratorInterface::ABSOLUTE_URL);
         return new JsonResponse($jsonPiece, Response::HTTP_CREATED,[],true);
     }
@@ -54,10 +58,15 @@ class PieceController extends AbstractController
     }
 
     #[Route('/api/PieceController/{id}', name: 'Pieces.update',methods:["PATCH","PUT"])]
-    public function updatePiece(int  $id, Request $request, PieceRepository $repositoryP,EntityManagerInterface $entityManager ,SerializerInterface $serializer ): JsonResponse
+    public function updatePiece(int  $id, Request $request, PieceRepository $repositoryP,TypePieceRepository $repositoryTP, EntityManagerInterface $entityManager ,SerializerInterface $serializer ): JsonResponse
     {
         $Piece = $repositoryP->find($id);
         $updatePiece = $serializer->deserialize($request->getContent(),Piece::class,'json',[AbstractNormalizer::OBJECT_TO_POPULATE =>$Piece]); 
+
+        $TypePiece = $repositoryTP->find($request->toArray()['type_piece'] ?? -1);
+        $Piece->setIdTypePiece($TypePiece);
+
+    
         $entityManager->persist($Piece);
         $entityManager->flush();
         $jsonPiece = $serializer->serialize($Piece,'json',["groups"=> "GetNom"]);

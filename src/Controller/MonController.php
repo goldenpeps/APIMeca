@@ -11,10 +11,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class MonController extends AbstractController
 {
@@ -28,6 +29,7 @@ class MonController extends AbstractController
     }
 
     #[Route('/api/monControllerT', name: 'modeleTests.GetAll',methods:["GET"])]
+    #[IsGranted("ADMIN",message:"nuh nuh")]
     public function GetAllModele(ModeleTestRepository $repository, SerializerInterface $serializer ): JsonResponse
     {
         $modeleTests = $repository->findAll();

@@ -58,7 +58,7 @@ class TypePieceController extends AbstractController
         $updateTypePiece = $serializer->deserialize($request->getContent(),TypePiece::class,'json',[AbstractNormalizer::OBJECT_TO_POPULATE =>$TypePiece]); 
         $entityManager->persist($TypePiece);
         $entityManager->flush();
-        $jsonTypePiece = $serializer->serialize($TypePiece,'json');
-         return new JsonResponse($jsonTypePiece, Response::HTTP_NO_CONTENT,[]);
+        $jsonTypePiece = $serializer->serialize($TypePiece,'json',);
+         return new JsonResponse($jsonTypePiece, Response::HTTP_OK,[],true);
     }
 }
