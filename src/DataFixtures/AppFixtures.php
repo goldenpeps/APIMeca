@@ -82,16 +82,16 @@ class AppFixtures extends Fixture
             $manager->persist($modeleT);
             }
         }
-           foreach($modeleT as $key ==$value){
-            $manager->persist($value);
-           }
-        foreach($piece as $key=>$pieceValue) {
-            $typePiece = $pieceValue;
-            while($modeleT->getId()==$listePiece->getId()){ 
-                $typePiece= $listePiece[array_rand($listePiece,1)];
-            }
-            $pieceValue->addReferenceTablePiece($typePiece);
-        }
+        //    foreach($modeleT as $key ==$value){
+        //     $manager->persist($value);
+        //    }
+        // foreach($piece as $key=>$pieceValue) {
+        //     $typePiece = $pieceValue;
+        //     while($modeleT->getId()==$listePiece->getId()){ 
+        //         $typePiece= $listePiece[array_rand($listePiece,1)];
+        //     }
+        //     $pieceValue->addReferenceTablePiece($typePiece);
+        // }
         for ($i = 0; $i < 10; $i++) {
             $typePiece = new TypePiece();
             $typePiece->setLibelleTypePiece($this->faker->firstName($gender = 'male' | 'female'));

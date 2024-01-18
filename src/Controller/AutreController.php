@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use DateTimeImmutable;
 use App\Entity\MonTypeT;
+use App\Entity\ModeleTest;
 use App\Repository\MonTypeTRepository;
 use App\Repository\ModeleTestRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -12,10 +13,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class AutreController extends AbstractController
     {
