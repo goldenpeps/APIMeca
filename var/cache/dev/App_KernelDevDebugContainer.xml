@@ -224,6 +224,13 @@
         <argument type="service" id=".service_locator.O2p6Lk7.App\Controller\ContratPieceController"/>
       </call>
     </service>
+    <service id="App\Controller\DowloadFilesController" class="App\Controller\DowloadFilesController" public="true" autowire="true" autoconfigure="true">
+      <tag name="controller.service_arguments"/>
+      <tag name="container.service_subscriber"/>
+      <call method="setContainer">
+        <argument type="service" id=".service_locator.O2p6Lk7.App\Controller\DowloadFilesController"/>
+      </call>
+    </service>
     <service id="App\Controller\MarqueVehiculeController" class="App\Controller\MarqueVehiculeController" public="true" autowire="true" autoconfigure="true">
       <tag name="controller.service_arguments"/>
       <tag name="container.service_subscriber"/>
@@ -288,6 +295,10 @@
       <tag name="doctrine.repository_service"/>
       <argument type="service" id="doctrine"/>
     </service>
+    <service id="App\Repository\DowloadFileRepository" class="App\Repository\DowloadFileRepository" autowire="true" autoconfigure="true">
+      <tag name="doctrine.repository_service"/>
+      <argument type="service" id="doctrine"/>
+    </service>
     <service id="App\Repository\MarqueVehiculeRepository" class="App\Repository\MarqueVehiculeRepository" autowire="true" autoconfigure="true">
       <tag name="doctrine.repository_service"/>
       <argument type="service" id="doctrine"/>
@@ -347,7 +358,7 @@
     </service>
     <service id="argument_resolver.service" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\ServiceValueResolver">
       <tag priority="-50" name="Symfony\Component\HttpKernel\Controller\ArgumentResolver\ServiceValueResolver">controller.argument_value_resolver</tag>
-      <argument type="service" id=".service_locator.lXU4AHP"/>
+      <argument type="service" id=".service_locator.pnYUpCo"/>
     </service>
     <service id="argument_resolver.default" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\DefaultValueResolver">
       <tag priority="-100" name="Symfony\Component\HttpKernel\Controller\ArgumentResolver\DefaultValueResolver">controller.argument_value_resolver</tag>
@@ -1556,7 +1567,7 @@
     </service>
     <service id="argument_resolver.not_tagged_controller" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\NotTaggedControllerValueResolver">
       <tag name="controller.argument_value_resolver" priority="-200"/>
-      <argument type="service" id=".service_locator.lXU4AHP"/>
+      <argument type="service" id=".service_locator.pnYUpCo"/>
     </service>
     <service id="routing.resolver" class="Symfony\Component\Config\Loader\LoaderResolver">
       <call method="addLoader">
@@ -2730,7 +2741,7 @@
     <service id="doctrine.orm.configuration" class="Doctrine\ORM\Configuration" abstract="true"/>
     <service id="doctrine.orm.entity_manager.abstract" class="Doctrine\ORM\EntityManager" lazy="true" abstract="true"/>
     <service id="doctrine.orm.container_repository_factory" class="Doctrine\Bundle\DoctrineBundle\Repository\ContainerRepositoryFactory">
-      <argument type="service" id=".service_locator.Btl1sZ9"/>
+      <argument type="service" id=".service_locator.4I_xfiy"/>
     </service>
     <service id="doctrine.orm.manager_configurator.abstract" class="Doctrine\Bundle\DoctrineBundle\ManagerConfigurator" abstract="true">
       <argument type="collection"/>
@@ -4187,6 +4198,9 @@
     <service id=".instanceof.Symfony\Contracts\Service\ServiceSubscriberInterface.0.App\Controller\ContratPieceController" class="App\Controller\ContratPieceController" autowire="true" abstract="true"/>
     <service id=".instanceof.Symfony\Bundle\FrameworkBundle\Controller\AbstractController.0.App\Controller\ContratPieceController" class="App\Controller\ContratPieceController" autowire="true" abstract="true"/>
     <service id=".abstract.instanceof.App\Controller\ContratPieceController" class="App\Controller\ContratPieceController" autowire="true" autoconfigure="true" abstract="true"/>
+    <service id=".instanceof.Symfony\Contracts\Service\ServiceSubscriberInterface.0.App\Controller\DowloadFilesController" class="App\Controller\DowloadFilesController" autowire="true" abstract="true"/>
+    <service id=".instanceof.Symfony\Bundle\FrameworkBundle\Controller\AbstractController.0.App\Controller\DowloadFilesController" class="App\Controller\DowloadFilesController" autowire="true" abstract="true"/>
+    <service id=".abstract.instanceof.App\Controller\DowloadFilesController" class="App\Controller\DowloadFilesController" autowire="true" autoconfigure="true" abstract="true"/>
     <service id=".instanceof.Symfony\Contracts\Service\ServiceSubscriberInterface.0.App\Controller\MarqueVehiculeController" class="App\Controller\MarqueVehiculeController" autowire="true" abstract="true"/>
     <service id=".instanceof.Symfony\Bundle\FrameworkBundle\Controller\AbstractController.0.App\Controller\MarqueVehiculeController" class="App\Controller\MarqueVehiculeController" autowire="true" abstract="true"/>
     <service id=".abstract.instanceof.App\Controller\MarqueVehiculeController" class="App\Controller\MarqueVehiculeController" autowire="true" autoconfigure="true" abstract="true"/>
@@ -4216,6 +4230,8 @@
     <service id=".abstract.instanceof.App\Repository\CRepository" class="App\Repository\CRepository" autowire="true" autoconfigure="true" abstract="true"/>
     <service id=".instanceof.Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface.0.App\Repository\ContratRepository" class="App\Repository\ContratRepository" autowire="true" abstract="true"/>
     <service id=".abstract.instanceof.App\Repository\ContratRepository" class="App\Repository\ContratRepository" autowire="true" autoconfigure="true" abstract="true"/>
+    <service id=".instanceof.Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface.0.App\Repository\DowloadFileRepository" class="App\Repository\DowloadFileRepository" autowire="true" abstract="true"/>
+    <service id=".abstract.instanceof.App\Repository\DowloadFileRepository" class="App\Repository\DowloadFileRepository" autowire="true" autoconfigure="true" abstract="true"/>
     <service id=".instanceof.Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface.0.App\Repository\MarqueVehiculeRepository" class="App\Repository\MarqueVehiculeRepository" autowire="true" abstract="true"/>
     <service id=".abstract.instanceof.App\Repository\MarqueVehiculeRepository" class="App\Repository\MarqueVehiculeRepository" autowire="true" autoconfigure="true" abstract="true"/>
     <service id=".instanceof.Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface.0.App\Repository\ModeleTestRepository" class="App\Repository\ModeleTestRepository" autowire="true" abstract="true"/>
@@ -4689,6 +4705,14 @@
         <argument key="entityManager" type="service_closure" id="doctrine.orm.default_entity_manager"/>
       </argument>
     </service>
+    <service id=".service_locator.eJmiWeB" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator"/>
+      <argument type="collection">
+        <argument key="dowloadFileRepository" type="service_closure" id="App\Repository\DowloadFileRepository"/>
+        <argument key="entityManagerInterface" type="service_closure" id="doctrine.orm.default_entity_manager"/>
+        <argument key="urlGeneratorInterface" type="service_closure" id="router.default"/>
+      </argument>
+    </service>
     <service id=".service_locator.FoeC1S9" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
@@ -4854,7 +4878,7 @@
         <argument key="serializer" type="service_closure" id="serializer"/>
       </argument>
     </service>
-    <service id=".service_locator.lXU4AHP" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator.pnYUpCo" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
         <argument key="App\Controller\AutreController::GetAllType" type="service_closure" id=".service_locator.BkN6Win"/>
@@ -4871,6 +4895,7 @@
         <argument key="App\Controller\ContratPieceController::delete" type="service_closure" id=".service_locator.CsMkqUa"/>
         <argument key="App\Controller\ContratPieceController::getAll" type="service_closure" id=".service_locator.CsMkqUa"/>
         <argument key="App\Controller\ContratPieceController::getOne" type="service_closure" id=".service_locator.CsMkqUa"/>
+        <argument key="App\Controller\DowloadFilesController::createFile" type="service_closure" id=".service_locator.eJmiWeB"/>
         <argument key="App\Controller\MarqueVehiculeController::GetAllMarque" type="service_closure" id=".service_locator.FoeC1S9"/>
         <argument key="App\Controller\MarqueVehiculeController::GetUneMarqueVehicule" type="service_closure" id=".service_locator.FoeC1S9"/>
         <argument key="App\Controller\MarqueVehiculeController::createMarqueVehicule" type="service_closure" id=".service_locator.j3fuGrH"/>
@@ -4923,6 +4948,7 @@
         <argument key="App\Controller\ContratPieceController:delete" type="service_closure" id=".service_locator.CsMkqUa"/>
         <argument key="App\Controller\ContratPieceController:getAll" type="service_closure" id=".service_locator.CsMkqUa"/>
         <argument key="App\Controller\ContratPieceController:getOne" type="service_closure" id=".service_locator.CsMkqUa"/>
+        <argument key="App\Controller\DowloadFilesController:createFile" type="service_closure" id=".service_locator.eJmiWeB"/>
         <argument key="App\Controller\MarqueVehiculeController:GetAllMarque" type="service_closure" id=".service_locator.FoeC1S9"/>
         <argument key="App\Controller\MarqueVehiculeController:GetUneMarqueVehicule" type="service_closure" id=".service_locator.FoeC1S9"/>
         <argument key="App\Controller\MarqueVehiculeController:createMarqueVehicule" type="service_closure" id=".service_locator.j3fuGrH"/>
@@ -5048,11 +5074,12 @@
         <argument key="doctrine.orm.listeners.pdo_session_handler_schema_listener" type="service_closure" id="doctrine.orm.listeners.pdo_session_handler_schema_listener"/>
       </argument>
     </service>
-    <service id=".service_locator.Btl1sZ9" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator.4I_xfiy" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
         <argument key="App\Repository\CRepository" type="service_closure" id="App\Repository\CRepository"/>
         <argument key="App\Repository\ContratRepository" type="service_closure" id="App\Repository\ContratRepository"/>
+        <argument key="App\Repository\DowloadFileRepository" type="service_closure" id="App\Repository\DowloadFileRepository"/>
         <argument key="App\Repository\MarqueVehiculeRepository" type="service_closure" id="App\Repository\MarqueVehiculeRepository"/>
         <argument key="App\Repository\ModeleTestRepository" type="service_closure" id="App\Repository\ModeleTestRepository"/>
         <argument key="App\Repository\ModeleVehiculeRepository" type="service_closure" id="App\Repository\ModeleVehiculeRepository"/>
@@ -5264,6 +5291,12 @@
     <service id=".service_locator.O2p6Lk7.App\Controller\ContratPieceController" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator_context" id="App\Controller\ContratPieceController"/>
       <argument>App\Controller\ContratPieceController</argument>
+      <argument type="service" id="service_container"/>
+      <factory service=".service_locator.O2p6Lk7" method="withContext"/>
+    </service>
+    <service id=".service_locator.O2p6Lk7.App\Controller\DowloadFilesController" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator_context" id="App\Controller\DowloadFilesController"/>
+      <argument>App\Controller\DowloadFilesController</argument>
       <argument type="service" id="service_container"/>
       <factory service=".service_locator.O2p6Lk7" method="withContext"/>
     </service>
@@ -6303,7 +6336,7 @@
     <service id="Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface" alias="lexik_jwt_authentication.encoder.lcobucci"/>
     <service id="lexik_jwt_authentication.key_loader" alias="lexik_jwt_authentication.key_loader.raw" public="true"/>
     <service id="container.env_var_processors_locator" alias=".service_locator.w7.f4fT" public="true"/>
-    <service id="argument_resolver.controller_locator" alias=".service_locator.lXU4AHP"/>
+    <service id="argument_resolver.controller_locator" alias=".service_locator.pnYUpCo"/>
     <service id="doctrine.id_generator_locator" alias=".service_locator.KLVvNIq"/>
     <service id="Psr\Log\LoggerInterface" alias="logger"/>
     <service id=".service_locator.Rlg80n6" alias=".service_locator.WfO.0Vv"/>
@@ -6329,7 +6362,7 @@
     <service id=".service_locator.DxiWG9n" alias=".service_locator.Ii2msFJ"/>
     <service id=".service_locator.2x2f0KJ" alias=".service_locator.GF4LUwf"/>
     <service id=".service_locator.lmaQmz7" alias=".service_locator.RGXR_1y"/>
-    <service id=".service_locator.Rt1ocWA" alias=".service_locator.lXU4AHP"/>
+    <service id=".service_locator.EkvMzhE" alias=".service_locator.pnYUpCo"/>
     <service id=".service_locator.BFrsqsn" alias=".service_locator.F9PKc.7"/>
     <service id=".service_locator.LMuqDDe" alias=".service_locator.VHsrTPK"/>
     <service id=".service_locator.jUv.zyj" alias=".service_locator.O2p6Lk7"/>
@@ -6354,6 +6387,7 @@
     <service id=".service_locator.JJTOyjt" alias=".service_locator.SeLVk3G"/>
     <service id=".service_locator.Dqj8X0H" alias=".service_locator.jxInMaG"/>
     <service id=".service_locator.9e2t_lq" alias=".service_locator.CsMkqUa"/>
+    <service id=".service_locator.v6WnAaZ" alias=".service_locator.eJmiWeB"/>
     <service id=".service_locator.RrsAnj." alias=".service_locator.FoeC1S9"/>
     <service id=".service_locator.XCHVLU_" alias=".service_locator.j3fuGrH"/>
     <service id=".service_locator.G9BpUnI" alias=".service_locator.Xc7OmM0"/>

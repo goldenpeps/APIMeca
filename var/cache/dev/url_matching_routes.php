@@ -21,6 +21,8 @@ return [
             [['_route' => 'app_contrat_piece_post', '_controller' => 'App\\Controller\\ContratPieceController::create'], null, ['POST' => 0], null, false, false, null],
             [['_route' => 'app_contrat_piece_delete', '_controller' => 'App\\Controller\\ContratPieceController::delete'], null, ['DELETE' => 0], null, false, false, null],
         ],
+        '/dowload/files' => [[['_route' => 'app.index', '_controller' => 'App\\Controller\\DowloadFilesController::index'], null, null, null, false, false, null]],
+        '/api/files' => [[['_route' => 'app_dowload_files', '_controller' => 'App\\Controller\\DowloadFilesController::createFile'], null, ['POST' => 0], null, false, false, null]],
         '/api/marqueController' => [
             [['_route' => 'marqueVehicule.GetAll', '_controller' => 'App\\Controller\\MarqueVehiculeController::GetAllMarque'], null, ['GET' => 0], null, false, false, null],
             [['_route' => 'marqueVehicule.Create', '_controller' => 'App\\Controller\\MarqueVehiculeController::createMarqueVehicule'], null, ['POST' => 0], null, false, false, null],
