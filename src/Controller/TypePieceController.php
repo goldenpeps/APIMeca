@@ -20,7 +20,7 @@ class TypePieceController extends AbstractController
     public function GetAllTypePiece(TypePieceRepository $repositoryTP, SerializerInterface $serializer ): JsonResponse
     {
         $TypePieceAll = $repositoryTP->findAll();
-        $jsonTypePieceAll  = $serializer->serialize($TypePieceAll,'json');
+        $jsonTypePieceAll  = $serializer->serialize($TypePieceAll,'json', ["groups" => ["GetId", "GetLibelle"]]);
          return new JsonResponse($jsonTypePieceAll, Response::HTTP_OK,[],true);
     }
 

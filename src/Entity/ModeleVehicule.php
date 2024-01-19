@@ -8,6 +8,23 @@ use App\Repository\ModeleVehiculeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 
+use Hateoas\Configuration\Annotation as Hateoas;
+/**  
+ * @[Hateoas\Relation](
+  *  "self"
+   * href= @Hateos\Route("ModeleVehicule.Get"),
+   * parameters={"id"="expr(object.getId())"}
+   * exlusion =@Hateos\Exclusion(groups="GetNomModele"),
+  *) 
+*/
+/**  
+ * @[Hateoas\Relation](
+  *  "up"
+   * href= @Hateos\Route("ModeleVehicule.Get"),
+   * parameters={"id"="expr(object.getId())"}
+   * exlusion =@Hateos\Exclusion(groups="GetNomModele"),
+  *) 
+*/
 #[ORM\Entity(repositoryClass: ModeleVehiculeRepository::class)]
 class ModeleVehicule
 {

@@ -13,7 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class PieceModeleController extends AbstractController
 {
-    #[Route('/PieceEtModele', name: 'app_piece_modele_get_all', methods: ['GET'])]
+    #[Route('/api/PieceEtModele', name: 'app_piece_modele_get_all', methods: ['GET'])]
     public function getAll(EntityManagerInterface $entityManager): JsonResponse
     {
 

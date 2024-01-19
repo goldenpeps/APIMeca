@@ -14,6 +14,7 @@ class Piece
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups("GetId")]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
@@ -21,6 +22,7 @@ class Piece
     private ?string $Nom = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups("GetReference")]
     private ?string $Reference = null;
 
     #[ORM\Column]
@@ -28,6 +30,7 @@ class Piece
 
     #[ORM\ManyToOne(inversedBy: 'ReferenceTablePieces')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups("GetTypePiece")]
     private ?TypePiece $Id_TypePiece = null;
 
     #[ORM\ManyToMany(targetEntity: Contrat::class, mappedBy: 'AssosiationContratPiece')]

@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\DowloadFileRepository;
 use Symfony\Component\HttpFoundation\File\File;
@@ -26,7 +28,6 @@ class DowloadFile
     #[ORM\Column(length: 255)]
     private ?string $slug = null;
 
-    #[ORM\Column(length: 255)]
     private ?File $file = null;
 
     #[ORM\Column(length: 255)]
@@ -34,6 +35,13 @@ class DowloadFile
 
     #[ORM\Column(length: 255)]
     private ?string $publicpath = null;
+
+
+    #[ORM\Column(length: 255)]
+    private ?string $etat = null;
+
+
+  
 
     public function getId(): ?int
     {
@@ -86,7 +94,7 @@ class DowloadFile
     public function setFile(UploadedFile $file): static
     {
         $this->file = $file;
-   
+        
         $this->setName($file->getClientOriginalName());
         $this->setRealName($file->getClientOriginalName());
         $this->setPublicpath($file->getClientOriginalName());
@@ -122,4 +130,20 @@ class DowloadFile
 
         return $this;
     }
+
+ 
+
+
+    public function getEtat(): ?string
+    {
+        return $this->etat;
+    }
+
+    public function setEtat(string $etat): static
+    {
+        $this->etat = $etat;
+
+        return $this;
+    }
+
 }

@@ -8,6 +8,7 @@
 return [
     false, // $matchHost
     [ // $staticRoutes
+        '/api/doc.json' => [[['_route' => 'app.swagger', '_controller' => 'nelmio_api_doc.controller.swagger'], null, ['GET' => 0], null, false, false, null]],
         '/api/AutreControllerT' => [
             [['_route' => 'monTypeT.GetAll', '_controller' => 'App\\Controller\\AutreController::GetAllType'], null, ['GET' => 0], null, false, false, null],
             [['_route' => 'monTypeT.Create', '_controller' => 'App\\Controller\\AutreController::creatModelsTest'], null, ['POST' => 0], null, false, false, null],
@@ -39,8 +40,8 @@ return [
             [['_route' => 'Pieces.GetAll', '_controller' => 'App\\Controller\\PieceController::GetAllPiece'], null, ['GET' => 0], null, false, false, null],
             [['_route' => 'Pieces.Create', '_controller' => 'App\\Controller\\PieceController::createPiece'], null, ['POST' => 0], null, false, false, null],
         ],
+        '/api/PieceEtModele' => [[['_route' => 'app_piece_modele_get_all', '_controller' => 'App\\Controller\\PieceModeleController::getAll'], null, ['GET' => 0], null, false, false, null]],
         '/PieceEtModele' => [
-            [['_route' => 'app_piece_modele_get_all', '_controller' => 'App\\Controller\\PieceModeleController::getAll'], null, ['GET' => 0], null, false, false, null],
             [['_route' => 'app_modele_piece_post', '_controller' => 'App\\Controller\\PieceModeleController::create'], null, ['POST' => 0], null, false, false, null],
             [['_route' => 'app_modele_piece_delete', '_controller' => 'App\\Controller\\PieceModeleController::delete'], null, ['DELETE' => 0], null, false, false, null],
         ],
@@ -53,6 +54,7 @@ return [
             [['_route' => 'UtilisateurMecano.Create', '_controller' => 'App\\Controller\\UtilisateurMecanoController::createUtilisateurMecano'], null, ['POST' => 0], null, false, false, null],
         ],
         '/api/login_check' => [[['_route' => 'api_login_check'], null, null, null, false, false, null]],
+        '/api/doc' => [[['_route' => 'app.swagger_ui', '_controller' => 'nelmio_api_doc.controller.swagger_ui'], null, ['GET' => 0], null, false, false, null]],
     ],
     [ // $regexpList
         0 => '{^(?'
@@ -65,33 +67,36 @@ return [
                         .'|(*:116)'
                     .')'
                     .'|m(?'
-                        .'|arqueController/([^/]++)(?'
-                            .'|(*:156)'
+                        .'|arqueController/(?'
+                            .'|([^/]++)(?'
+                                .'|(*:159)'
+                            .')'
+                            .'|setimage/([^/]++)/([^/]++)(*:194)'
                         .')'
                         .'|o(?'
                             .'|deleVehiculeController/([^/]++)(?'
-                                .'|(*:203)'
+                                .'|(*:241)'
                             .')'
                             .'|nControllerT/([^/]++)(?'
-                                .'|(*:236)'
+                                .'|(*:274)'
                             .')'
                         .')'
                     .')'
                     .'|PieceController/([^/]++)(?'
-                        .'|(*:274)'
+                        .'|(*:312)'
                     .')'
                     .'|TypePieceController/([^/]++)(?'
-                        .'|(*:314)'
+                        .'|(*:352)'
                     .')'
                     .'|UtilisateurMecano(?'
                         .'|Controller/([^/]++)(?'
-                            .'|(*:365)'
+                            .'|(*:403)'
                         .')'
-                        .'|/([^/]++)(*:383)'
+                        .'|/([^/]++)(*:421)'
                     .')'
                 .')'
-                .'|/contratEtPiece/([^/]++)/([^/]++)(*:426)'
-                .'|/PieceEtModele/([^/]++)/([^/]++)(*:466)'
+                .'|/contratEtPiece/([^/]++)/([^/]++)(*:464)'
+                .'|/PieceEtModele/([^/]++)/([^/]++)(*:504)'
             .')/?$}sDu',
     ],
     [ // $dynamicRoutes
@@ -106,38 +111,38 @@ return [
             [['_route' => 'ContractController.delete', '_controller' => 'App\\Controller\\ContratController::deleteContrat'], ['id'], ['DELETE' => 0], null, false, true, null],
             [['_route' => 'ContractController.update', '_controller' => 'App\\Controller\\ContratController::updateUtilisateurMecano'], ['id'], ['PATCH' => 0, 'PUT' => 1], null, false, true, null],
         ],
-        156 => [
+        159 => [
             [['_route' => 'marqueVehicule.Get', '_controller' => 'App\\Controller\\MarqueVehiculeController::GetUneMarqueVehicule'], ['id'], ['GET' => 0], null, false, true, null],
             [['_route' => 'marqueVehicule.delete', '_controller' => 'App\\Controller\\MarqueVehiculeController::deleteMarqueVehicule'], ['id'], ['DELETE' => 0], null, false, true, null],
-            [['_route' => 'marqueVehicule.update', '_controller' => 'App\\Controller\\MarqueVehiculeController::updateMarqueVehicule'], ['id'], ['PATCH' => 0, 'PUT' => 1], null, false, true, null],
         ],
-        203 => [
+        194 => [[['_route' => 'marqueVehicule.update', '_controller' => 'App\\Controller\\MarqueVehiculeController::UpdateImage'], ['idv', 'idI'], ['PUT' => 0], null, false, true, null]],
+        241 => [
             [['_route' => 'ModeleVehicule.Get', '_controller' => 'App\\Controller\\ModeleVehiculeController::GetModeleVehicule'], ['id'], ['GET' => 0], null, false, true, null],
             [['_route' => 'ModeleVehicule.delete', '_controller' => 'App\\Controller\\ModeleVehiculeController::deleteModeleVehicule'], ['id'], ['DELETE' => 0], null, false, true, null],
             [['_route' => 'ModeleVehicule.update', '_controller' => 'App\\Controller\\ModeleVehiculeController::updatePiece'], ['id'], ['PATCH' => 0, 'PUT' => 1], null, false, true, null],
         ],
-        236 => [
+        274 => [
             [['_route' => 'modeleTests.Get', '_controller' => 'App\\Controller\\MonController::GetModeleUnique'], ['id'], ['GET' => 0], null, false, true, null],
             [['_route' => 'modeleTests.delete', '_controller' => 'App\\Controller\\MonController::deleteModeleUnique'], ['id'], ['DELETE' => 0], null, false, true, null],
             [['_route' => 'modeleTests.update', '_controller' => 'App\\Controller\\MonController::updateModeleUnique'], ['id'], ['PATCH' => 0, 'PUT' => 1], null, false, true, null],
         ],
-        274 => [
+        312 => [
             [['_route' => 'Pieces.Get', '_controller' => 'App\\Controller\\PieceController::GetPiece'], ['id'], ['GET' => 0], null, false, true, null],
             [['_route' => 'Pieces.delete', '_controller' => 'App\\Controller\\PieceController::deletePiece'], ['id'], ['DELETE' => 0], null, false, true, null],
             [['_route' => 'Pieces.update', '_controller' => 'App\\Controller\\PieceController::updatePiece'], ['id'], ['PATCH' => 0, 'PUT' => 1], null, false, true, null],
         ],
-        314 => [
+        352 => [
             [['_route' => 'TypePiece.Get', '_controller' => 'App\\Controller\\TypePieceController::GetUneTypePiece'], ['id'], ['GET' => 0], null, false, true, null],
             [['_route' => 'TypePiece.delete', '_controller' => 'App\\Controller\\TypePieceController::deletePiece'], ['id'], ['DELETE' => 0], null, false, true, null],
             [['_route' => 'TypePiece.update', '_controller' => 'App\\Controller\\TypePieceController::updatePiece'], ['id'], ['PATCH' => 0, 'PUT' => 1], null, false, true, null],
         ],
-        365 => [
+        403 => [
             [['_route' => 'UtilisateurMecano.Get', '_controller' => 'App\\Controller\\UtilisateurMecanoController::GetUneUtilisateurMecano'], ['id'], ['GET' => 0], null, false, true, null],
             [['_route' => 'UtilisateurMecano.delete', '_controller' => 'App\\Controller\\UtilisateurMecanoController::deleteUtilisateurMecano'], ['id'], ['DELETE' => 0], null, false, true, null],
         ],
-        383 => [[['_route' => 'UtilisateurMecano.update', '_controller' => 'App\\Controller\\UtilisateurMecanoController::updateMarqueVehicule'], ['id'], ['PATCH' => 0, 'PUT' => 1], null, false, true, null]],
-        426 => [[['_route' => 'app_contrat_piece_get', '_controller' => 'App\\Controller\\ContratPieceController::getOne'], ['contratId', 'pieceId'], ['GET' => 0], null, false, true, null]],
-        466 => [
+        421 => [[['_route' => 'UtilisateurMecano.update', '_controller' => 'App\\Controller\\UtilisateurMecanoController::updateMarqueVehicule'], ['id'], ['PATCH' => 0, 'PUT' => 1], null, false, true, null]],
+        464 => [[['_route' => 'app_contrat_piece_get', '_controller' => 'App\\Controller\\ContratPieceController::getOne'], ['contratId', 'pieceId'], ['GET' => 0], null, false, true, null]],
+        504 => [
             [['_route' => 'app_piece_modele_get_one', '_controller' => 'App\\Controller\\PieceModeleController::getOne'], ['modeleId', 'pieceId'], ['GET' => 0], null, false, true, null],
             [null, null, null, null, false, false, 0],
         ],

@@ -22,15 +22,16 @@ class PieceController extends AbstractController
     public function GetAllPiece(PieceRepository $repositoryP, SerializerInterface $serializer ): JsonResponse
     {
         $PieceAll = $repositoryP->findAll();
-        $jsonPieceAll  = $serializer->serialize($PieceAll,'json');
-         return new JsonResponse($jsonPieceAll, Response::HTTP_OK,[],true);
+        $jsonPieceAll = $serializer->serialize($PieceAll, 'json', ["groups" => ["GetId", "GetNom", "GetReference", "GetTypePiece"]]);
+        
+        return new JsonResponse($jsonPieceAll, Response::HTTP_OK, [], true);
     }
 
     #[Route('/api/PieceController/{id}', name: 'Pieces.Get',methods:["GET"])]
     public function GetPiece(int  $id, PieceRepository $repositoryP, SerializerInterface $serializer ): JsonResponse
     {
         $Piece = $repositoryP->find($id);
-        $jsonPiece = $serializer->serialize($Piece,'json');
+        $jsonPiece = $serializer->serialize($Piece,'json', ["groups" => ["GetId", "GetNom","GetType","GetReference"]]);
          return new JsonResponse($jsonPiece, Response::HTTP_OK,[],true);
     }
     #[Route('/api/PieceController', name: 'Pieces.Create',methods:["POST"])]

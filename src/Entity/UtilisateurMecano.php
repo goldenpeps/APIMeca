@@ -21,6 +21,7 @@ class UtilisateurMecano
     private ?string $Nom = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups("GetPrenom")]
     private ?string $Prenom = null;
 
     #[ORM\Column(length: 255)]

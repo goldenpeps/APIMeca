@@ -21,7 +21,7 @@ class UtilisateurMecanoController extends AbstractController
     public function GetAllUtilisateurMecano(UtilisateurMecanoRepository $repositoryUM, SerializerInterface $serializer ): JsonResponse
     {
         $utilisateurMecanoAll = $repositoryUM->findAll();
-        $jsonUtilisateurMecanoAll = $serializer->serialize($utilisateurMecanoAll,'json');
+        $jsonUtilisateurMecanoAll = $serializer->serialize($utilisateurMecanoAll,'json', ["groups" => ["GetNom", "GetPrenom"]]);
          return new JsonResponse($jsonUtilisateurMecanoAll, Response::HTTP_OK,[],true);
     }
 

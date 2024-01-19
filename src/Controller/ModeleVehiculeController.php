@@ -21,7 +21,7 @@ class ModeleVehiculeController extends AbstractController
     public function GetModeleVehiculeAll(ModeleVehiculeRepository $repositoryMV, SerializerInterface $serializer ): JsonResponse
     {
         $modeleVehiculeAll = $repositoryMV->findAll();
-        $jsonModeleVehiculeAll  = $serializer->serialize($modeleVehiculeAll,'json');
+        $jsonModeleVehiculeAll  = $serializer->serialize($modeleVehiculeAll,'json', ["groups" => ["GetNomModele"]]);
          return new JsonResponse($jsonModeleVehiculeAll, Response::HTTP_OK,[],true);
     }
 
@@ -29,7 +29,7 @@ class ModeleVehiculeController extends AbstractController
     public function GetModeleVehicule(int  $id, ModeleVehiculeRepository $repositoryMV, SerializerInterface $serializer ): JsonResponse
     {
         $modeleVehicule = $repositoryMV->find($id);
-        $jsonModeleVehicule = $serializer->serialize($modeleVehicule,'json');
+        $jsonModeleVehicule = $serializer->serialize($modeleVehicule,'json', ["groups" => ["GetNomModele"]]);
          return new JsonResponse($jsonModeleVehicule, Response::HTTP_OK,[],true);
     }
     #[Route('/api/modeleVehiculeController', name: 'ModeleVehicule.Create',methods:["POST"])]

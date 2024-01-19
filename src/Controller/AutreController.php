@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use DateTimeImmutable;
+
 use App\Entity\MonTypeT;
 use App\Entity\ModeleTest;
 use App\Repository\MonTypeTRepository;
@@ -59,9 +60,9 @@ class AutreController extends AbstractController
         public function creatModelsTest(Request $request, ModeleTestRepository $repository,EntityManagerInterface $entityManager, UrlGeneratorInterface $interfaceUrl ,SerializerInterface $serializer ): JsonResponse
         {
            
-            $modeleTestCreate = $serializer->deserialize($request->getContent(),ModeleTest::class,'json');
-            $modeleTestCreate->setCreateAt(new DateTimeImmutable());
-            $modeleTestCreate->setUpdateAt(new DateTimeImmutable());
+            $modeleTestCreate = $serializer->deserialize($request->getContent(),MonTypeT::class,'json');
+            $modeleTestCreate->setCreateBy(new DateTimeImmutable());
+            $modeleTestCreate->setUpdateBy(new DateTimeImmutable());
     
             $entityManager->persist($modeleTestCreate);
             $entityManager->flush();

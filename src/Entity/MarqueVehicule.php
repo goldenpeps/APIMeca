@@ -21,6 +21,9 @@ class MarqueVehicule
     #[ORM\OneToMany(mappedBy: 'id_marqueVehicule', targetEntity: ModeleVehicule::class)]
     private Collection $referenceModeleVehicules;
 
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?DowloadFile $image = null;
+
     public function __construct()
     {
         $this->referenceModeleVehicules = new ArrayCollection();
@@ -69,6 +72,18 @@ class MarqueVehicule
                 $referenceModeleVehicule->setIdMarqueVehicule(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getImage(): ?DowloadFile
+    {
+        return $this->image;
+    }
+
+    public function setImage(?DowloadFile $image): static
+    {
+        $this->image = $image;
 
         return $this;
     }

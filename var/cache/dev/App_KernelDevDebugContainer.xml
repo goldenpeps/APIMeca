@@ -20,6 +20,7 @@
       <parameter key="DoctrineFixturesBundle">Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle</parameter>
       <parameter key="SecurityBundle">Symfony\Bundle\SecurityBundle\SecurityBundle</parameter>
       <parameter key="LexikJWTAuthenticationBundle">Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle</parameter>
+      <parameter key="NelmioApiDocBundle">Nelmio\ApiDocBundle\NelmioApiDocBundle</parameter>
     </parameter>
     <parameter key="kernel.bundles_metadata" type="collection">
       <parameter key="FrameworkBundle" type="collection">
@@ -49,6 +50,10 @@
       <parameter key="LexikJWTAuthenticationBundle" type="collection">
         <parameter key="path">/var/www/EwanAPI/vendor/lexik/jwt-authentication-bundle</parameter>
         <parameter key="namespace">Lexik\Bundle\JWTAuthenticationBundle</parameter>
+      </parameter>
+      <parameter key="NelmioApiDocBundle" type="collection">
+        <parameter key="path">/var/www/EwanAPI/vendor/nelmio/api-doc-bundle</parameter>
+        <parameter key="namespace">Nelmio\ApiDocBundle</parameter>
       </parameter>
     </parameter>
     <parameter key="kernel.charset">UTF-8</parameter>
@@ -192,6 +197,10 @@
     <parameter key="lexik_jwt_authentication.user_id_claim">username</parameter>
     <parameter key="lexik_jwt_authentication.encoder.signature_algorithm">RS256</parameter>
     <parameter key="lexik_jwt_authentication.encoder.crypto_engine">openssl</parameter>
+    <parameter key="nelmio_api_doc.areas" type="collection">
+      <parameter>default</parameter>
+    </parameter>
+    <parameter key="nelmio_api_doc.use_validation_groups">false</parameter>
     <parameter key="console.command.ids" type="collection"/>
   </parameters>
   <services>
@@ -358,7 +367,7 @@
     </service>
     <service id="argument_resolver.service" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\ServiceValueResolver">
       <tag priority="-50" name="Symfony\Component\HttpKernel\Controller\ArgumentResolver\ServiceValueResolver">controller.argument_value_resolver</tag>
-      <argument type="service" id=".service_locator.pnYUpCo"/>
+      <argument type="service" id=".service_locator.cFIbj78"/>
     </service>
     <service id="argument_resolver.default" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\DefaultValueResolver">
       <tag priority="-100" name="Symfony\Component\HttpKernel\Controller\ArgumentResolver\DefaultValueResolver">controller.argument_value_resolver</tag>
@@ -1567,7 +1576,7 @@
     </service>
     <service id="argument_resolver.not_tagged_controller" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\NotTaggedControllerValueResolver">
       <tag name="controller.argument_value_resolver" priority="-200"/>
-      <argument type="service" id=".service_locator.pnYUpCo"/>
+      <argument type="service" id=".service_locator.cFIbj78"/>
     </service>
     <service id="routing.resolver" class="Symfony\Component\Config\Loader\LoaderResolver">
       <call method="addLoader">
@@ -1745,7 +1754,6 @@
         <argument type="service" id="serializer.normalizer.uid"/>
         <argument type="service" id="serializer.normalizer.datetime"/>
         <argument type="service" id="serializer.normalizer.constraint_violation_list"/>
-        <argument type="service" id="serializer.normalizer.mime_message"/>
         <argument type="service" id="serializer.normalizer.datetimezone"/>
         <argument type="service" id="serializer.normalizer.dateinterval"/>
         <argument type="service" id="serializer.normalizer.form_error"/>
@@ -1770,10 +1778,6 @@
       <argument type="collection"/>
       <argument type="service" id="serializer.name_converter.metadata_aware"/>
     </service>
-    <service id="serializer.normalizer.mime_message" class="Symfony\Component\Serializer\Normalizer\MimeMessageNormalizer">
-      <tag name="serializer.normalizer" priority="-915"/>
-      <argument type="service" id="serializer.normalizer.property"/>
-    </service>
     <service id="serializer.normalizer.datetimezone" class="Symfony\Component\Serializer\Normalizer\DateTimeZoneNormalizer">
       <tag name="serializer.normalizer" priority="-915"/>
     </service>
@@ -1782,7 +1786,7 @@
     </service>
     <service id="serializer.normalizer.data_uri" class="Symfony\Component\Serializer\Normalizer\DataUriNormalizer">
       <tag name="serializer.normalizer" priority="-920"/>
-      <argument type="service" id="mime_types" on-invalid="null"/>
+      <argument>null</argument>
     </service>
     <service id="serializer.normalizer.datetime" class="Symfony\Component\Serializer\Normalizer\DateTimeNormalizer">
       <tag name="serializer.normalizer" priority="-910"/>
@@ -2359,11 +2363,6 @@
       <argument type="service" id="property_info"/>
       <argument type="service" id="property_info"/>
       <argument>null</argument>
-    </service>
-    <service id="mime_types" class="Symfony\Component\Mime\MimeTypes">
-      <call method="setDefault">
-        <argument type="service" id="mime_types"/>
-      </call>
     </service>
     <service id="maker.file_manager" class="Symfony\Bundle\MakerBundle\FileManager">
       <argument type="service" id="filesystem"/>
@@ -3438,6 +3437,13 @@
         <argument>null</argument>
       </call>
       <call method="add">
+        <argument type="service" id=".security.request_matcher.9iVNn.L"/>
+        <argument type="collection">
+          <argument>PUBLIC_ACCESS</argument>
+        </argument>
+        <argument>null</argument>
+      </call>
+      <call method="add">
         <argument type="service" id=".security.request_matcher.gjnNpJn"/>
         <argument type="collection">
           <argument>IS_AUTHENTICATED_FULLY</argument>
@@ -3984,6 +3990,14 @@
         <argument type="service" id=".security.request_matcher.lyVOED."/>
       </argument>
     </service>
+    <service id=".security.request_matcher.lyfP2u_" class="Symfony\Component\HttpFoundation\RequestMatcher\PathRequestMatcher">
+      <argument>^/api/doc</argument>
+    </service>
+    <service id=".security.request_matcher.9iVNn.L" class="Symfony\Component\HttpFoundation\ChainRequestMatcher">
+      <argument type="collection">
+        <argument type="service" id=".security.request_matcher.lyfP2u_"/>
+      </argument>
+    </service>
     <service id=".security.request_matcher.gjnNpJn" class="Symfony\Component\HttpFoundation\ChainRequestMatcher">
       <argument type="collection">
         <argument type="service" id=".security.request_matcher.AMZT15Y"/>
@@ -4188,6 +4202,279 @@
       <call method="setDescription">
         <argument>Generate public/private keys for use in your application.</argument>
       </call>
+    </service>
+    <service id="nelmio_api_doc.command.dump" class="Nelmio\ApiDocBundle\Command\DumpCommand" public="true">
+      <tag name="console.command" command="nelmio:apidoc:dump"/>
+      <tag name="container.no_preload"/>
+      <argument type="service" id="nelmio_api_doc.render_docs"/>
+      <call method="setName">
+        <argument>nelmio:apidoc:dump</argument>
+      </call>
+    </service>
+    <service id="nelmio_api_doc.controller.swagger_json" class="Nelmio\ApiDocBundle\Controller\DocumentationController" public="true">
+      <argument type="service" id="nelmio_api_doc.render_docs"/>
+    </service>
+    <service id="nelmio_api_doc.controller.swagger_yaml" class="Nelmio\ApiDocBundle\Controller\YamlDocumentationController" public="true">
+      <argument type="service" id="nelmio_api_doc.render_docs"/>
+    </service>
+    <service id="nelmio_api_doc.render_docs" class="Nelmio\ApiDocBundle\Render\RenderOpenApi" public="true">
+      <argument type="service" id="nelmio_api_doc.generator_locator"/>
+      <argument type="service" id="nelmio_api_doc.render_docs.json"/>
+      <argument type="service" id="nelmio_api_doc.render_docs.yaml"/>
+      <argument>null</argument>
+    </service>
+    <service id="nelmio_api_doc.render_docs.json" class="Nelmio\ApiDocBundle\Render\Json\JsonOpenApiRenderer"/>
+    <service id="nelmio_api_doc.render_docs.yaml" class="Nelmio\ApiDocBundle\Render\Yaml\YamlOpenApiRenderer"/>
+    <service id="nelmio_api_doc.controller_reflector" class="Nelmio\ApiDocBundle\Util\ControllerReflector">
+      <argument type="service" id="service_container"/>
+    </service>
+    <service id="nelmio_api_doc.describers.config" class="Nelmio\ApiDocBundle\Describer\ExternalDocDescriber">
+      <tag name="nelmio_api_doc.describer" priority="1000"/>
+      <tag name="nelmio_api_doc.describer.default" priority="1000"/>
+      <argument type="collection">
+        <argument key="info" type="collection">
+          <argument key="title">Atelier du Bien etre</argument>
+          <argument key="description">l'API du site</argument>
+          <argument key="version">2.0.0</argument>
+        </argument>
+        <argument key="paths" type="collection">
+          <argument key="/api/login_check" type="collection">
+            <argument key="post" type="collection">
+              <argument key="operationId">postCredentialsItem</argument>
+              <argument key="tags" type="collection">
+                <argument>Token</argument>
+              </argument>
+              <argument key="summary">Permet d'obtenir le token JWT pour se logger.</argument>
+              <argument key="requestBody" type="collection">
+                <argument key="description">Crée un nouveau token JWT</argument>
+                <argument key="content" type="collection">
+                  <argument key="application/json" type="collection">
+                    <argument key="schema" type="collection">
+                      <argument key="$ref">#/components/schemas/Credentials</argument>
+                    </argument>
+                  </argument>
+                </argument>
+              </argument>
+              <argument key="responses" type="collection">
+                <argument key="200" type="collection">
+                  <argument key="description">Récupère le token JWT</argument>
+                  <argument key="content" type="collection">
+                    <argument key="application/json" type="collection">
+                      <argument key="schema" type="collection">
+                        <argument key="$ref">#/components/schemas/Token</argument>
+                      </argument>
+                    </argument>
+                  </argument>
+                </argument>
+              </argument>
+            </argument>
+          </argument>
+        </argument>
+        <argument key="components" type="collection">
+          <argument key="schemas" type="collection">
+            <argument key="Token" type="collection">
+              <argument key="type">object</argument>
+              <argument key="properties" type="collection">
+                <argument key="token" type="collection">
+                  <argument key="type">string</argument>
+                  <argument key="readOnly">true</argument>
+                </argument>
+              </argument>
+            </argument>
+            <argument key="Credentials" type="collection">
+              <argument key="type">object</argument>
+              <argument key="properties" type="collection">
+                <argument key="username" type="collection">
+                  <argument key="type">string</argument>
+                  <argument key="default">public</argument>
+                </argument>
+                <argument key="password" type="collection">
+                  <argument key="type">string</argument>
+                  <argument key="default">public</argument>
+                </argument>
+              </argument>
+            </argument>
+          </argument>
+          <argument key="securitySchemes" type="collection">
+            <argument key="bearerAuth" type="collection">
+              <argument key="type">apiKey</argument>
+              <argument key="in">header</argument>
+              <argument key="name">Authorization</argument>
+            </argument>
+          </argument>
+        </argument>
+      </argument>
+    </service>
+    <service id="nelmio_api_doc.describers.default" class="Nelmio\ApiDocBundle\Describer\DefaultDescriber">
+      <tag name="nelmio_api_doc.describer" priority="-1000"/>
+      <tag name="nelmio_api_doc.describer.default" priority="-1000"/>
+    </service>
+    <service id="nelmio_api_doc.route_describers.route_metadata" class="Nelmio\ApiDocBundle\RouteDescriber\RouteMetadataDescriber">
+      <tag name="nelmio_api_doc.route_describer" priority="-300"/>
+    </service>
+    <service id="nelmio_api_doc.model_describers.self_describing" class="Nelmio\ApiDocBundle\ModelDescriber\SelfDescribingModelDescriber">
+      <tag name="nelmio_api_doc.model_describer" priority="1000"/>
+    </service>
+    <service id="nelmio_api_doc.model_describers.object" class="Nelmio\ApiDocBundle\ModelDescriber\ObjectModelDescriber">
+      <tag name="nelmio_api_doc.model_describer"/>
+      <argument type="service" id="property_info"/>
+      <argument>null</argument>
+      <argument type="service" id="nelmio_api_doc.object_model.property_describer"/>
+      <argument type="collection">
+        <argument>json</argument>
+      </argument>
+      <argument type="service" id="serializer.name_converter.metadata_aware" on-invalid="ignore"/>
+      <argument>false</argument>
+      <argument type="service" id="serializer.mapping.class_metadata_factory" on-invalid="ignore"/>
+    </service>
+    <service id="nelmio_api_doc.model_describers.enum" class="Nelmio\ApiDocBundle\ModelDescriber\EnumModelDescriber">
+      <tag name="nelmio_api_doc.model_describer" priority="100"/>
+    </service>
+    <service id="nelmio_api_doc.object_model.property_describer" class="Nelmio\ApiDocBundle\PropertyDescriber\PropertyDescriber">
+      <tag name="nelmio_api_doc.object_model.property_describer" priority="100"/>
+      <argument type="tagged_iterator" tag="nelmio_api_doc.object_model.property_describer"/>
+    </service>
+    <service id="nelmio_api_doc.object_model.property_describers.array" class="Nelmio\ApiDocBundle\PropertyDescriber\ArrayPropertyDescriber">
+      <tag name="nelmio_api_doc.object_model.property_describer" priority="-1000"/>
+    </service>
+    <service id="nelmio_api_doc.object_model.property_describers.boolean" class="Nelmio\ApiDocBundle\PropertyDescriber\BooleanPropertyDescriber">
+      <tag name="nelmio_api_doc.object_model.property_describer" priority="-1000"/>
+    </service>
+    <service id="nelmio_api_doc.object_model.property_describers.float" class="Nelmio\ApiDocBundle\PropertyDescriber\FloatPropertyDescriber">
+      <tag name="nelmio_api_doc.object_model.property_describer" priority="-1000"/>
+    </service>
+    <service id="nelmio_api_doc.object_model.property_describers.integer" class="Nelmio\ApiDocBundle\PropertyDescriber\IntegerPropertyDescriber">
+      <tag name="nelmio_api_doc.object_model.property_describer" priority="-1000"/>
+    </service>
+    <service id="nelmio_api_doc.object_model.property_describers.string" class="Nelmio\ApiDocBundle\PropertyDescriber\StringPropertyDescriber">
+      <tag name="nelmio_api_doc.object_model.property_describer" priority="-1000"/>
+    </service>
+    <service id="nelmio_api_doc.object_model.property_describers.date_time" class="Nelmio\ApiDocBundle\PropertyDescriber\DateTimePropertyDescriber">
+      <tag name="nelmio_api_doc.object_model.property_describer" priority="-1000"/>
+    </service>
+    <service id="nelmio_api_doc.object_model.property_describers.nullable" class="Nelmio\ApiDocBundle\PropertyDescriber\NullablePropertyDescriber">
+      <tag name="nelmio_api_doc.object_model.property_describer"/>
+    </service>
+    <service id="nelmio_api_doc.object_model.property_describers.required" class="Nelmio\ApiDocBundle\PropertyDescriber\RequiredPropertyDescriber">
+      <tag name="nelmio_api_doc.object_model.property_describer"/>
+    </service>
+    <service id="nelmio_api_doc.object_model.property_describers.object" class="Nelmio\ApiDocBundle\PropertyDescriber\ObjectPropertyDescriber">
+      <tag name="nelmio_api_doc.object_model.property_describer" priority="-1000"/>
+    </service>
+    <service id="nelmio_api_doc.object_model.property_describers.compound" class="Nelmio\ApiDocBundle\PropertyDescriber\CompoundPropertyDescriber">
+      <tag name="nelmio_api_doc.object_model.property_describer" priority="-1000"/>
+    </service>
+    <service id="nelmio_api_doc.form.documentation_extension" class="Nelmio\ApiDocBundle\Form\Extension\DocumentationExtension">
+      <tag name="form.type_extension" extended_type="Symfony\Component\Form\Extension\Core\Type\FormType" extended-type="Symfony\Component\Form\Extension\Core\Type\FormType"/>
+    </service>
+    <service id="nelmio_api_doc.swagger.processor.nullable_property" class="Nelmio\ApiDocBundle\Processor\NullablePropertyProcessor">
+      <tag name="nelmio_api_doc.swagger.processor"/>
+    </service>
+    <service id="nelmio_api_doc.open_api.generator" class="OpenApi\Generator">
+      <call method="addProcessor">
+        <argument type="service" id="nelmio_api_doc.swagger.processor.nullable_property"/>
+        <argument>null</argument>
+      </call>
+      <call method="addProcessor">
+        <argument type="service" id="nelmio_api_doc.swagger.processor.map_query_string"/>
+        <argument>null</argument>
+      </call>
+      <call method="addProcessor">
+        <argument type="service" id="nelmio_api_doc.swagger.processor.map_request_payload"/>
+        <argument>null</argument>
+      </call>
+    </service>
+    <service id="nelmio_api_doc.generator.default" class="Nelmio\ApiDocBundle\ApiDocGenerator" public="true">
+      <tag name="monolog.logger" channel="nelmio_api_doc"/>
+      <argument type="tagged_iterator" tag="nelmio_api_doc.describer.default"/>
+      <argument type="tagged_iterator" tag="nelmio_api_doc.model_describer"/>
+      <argument>null</argument>
+      <argument>null</argument>
+      <argument type="service" id="nelmio_api_doc.open_api.generator"/>
+      <call method="setAlternativeNames">
+        <argument type="collection"/>
+      </call>
+      <call method="setMediaTypes">
+        <argument type="collection">
+          <argument>json</argument>
+        </argument>
+      </call>
+      <call method="setLogger">
+        <argument type="service" id="logger"/>
+      </call>
+      <call method="setOpenApiVersion">
+        <argument>null</argument>
+      </call>
+    </service>
+    <service id="nelmio_api_doc.describers.route.default" class="Nelmio\ApiDocBundle\Describer\RouteDescriber">
+      <tag name="nelmio_api_doc.describer.default" priority="-400"/>
+      <argument type="service" id="nelmio_api_doc.routes.default"/>
+      <argument type="service" id="nelmio_api_doc.controller_reflector"/>
+      <argument type="tagged_iterator" tag="nelmio_api_doc.route_describer"/>
+    </service>
+    <service id="nelmio_api_doc.describers.openapi_php.default" class="Nelmio\ApiDocBundle\Describer\OpenApiPhpDescriber">
+      <tag name="nelmio_api_doc.describer.default" priority="-200"/>
+      <argument type="service" id="nelmio_api_doc.routes.default"/>
+      <argument type="service" id="nelmio_api_doc.controller_reflector"/>
+      <argument>null</argument>
+      <argument type="service" id="logger"/>
+    </service>
+    <service id="nelmio_api_doc.describers.config.default" class="Nelmio\ApiDocBundle\Describer\ExternalDocDescriber">
+      <tag name="nelmio_api_doc.describer.default" priority="990"/>
+      <argument type="collection"/>
+      <argument>true</argument>
+    </service>
+    <service id="nelmio_api_doc.routes.default" class="Symfony\Component\Routing\RouteCollection">
+      <argument type="service">
+        <service class="Symfony\Component\Routing\RouteCollection">
+          <factory service="router.default" method="getRouteCollection"/>
+        </service>
+      </argument>
+      <factory method="filter">
+        <service class="Nelmio\ApiDocBundle\Routing\FilteredRouteCollectionBuilder">
+          <argument type="service" id="annotation_reader" on-invalid="null"/>
+          <argument type="service" id="nelmio_api_doc.controller_reflector"/>
+          <argument>default</argument>
+          <argument type="collection">
+            <argument key="path_patterns" type="collection">
+              <argument>^/api(?!/doc$)</argument>
+            </argument>
+            <argument key="host_patterns" type="collection"/>
+            <argument key="name_patterns" type="collection"/>
+            <argument key="with_annotation">false</argument>
+            <argument key="disable_default_routes">false</argument>
+          </argument>
+        </service>
+      </factory>
+    </service>
+    <service id="nelmio_api_doc.generator_locator" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator"/>
+      <argument type="collection">
+        <argument key="default" type="service_closure" id="nelmio_api_doc.generator.default"/>
+      </argument>
+    </service>
+    <service id="nelmio_api_doc.route_describers.php_doc" class="Nelmio\ApiDocBundle\RouteDescriber\PhpDocDescriber">
+      <tag name="nelmio_api_doc.route_describer" priority="-275"/>
+    </service>
+    <service id="nelmio_api_doc.route_describers.route_argument" class="Nelmio\ApiDocBundle\RouteDescriber\RouteArgumentDescriber">
+      <tag name="nelmio_api_doc.route_describer" priority="-225"/>
+      <argument type="service" id="argument_metadata_factory"/>
+      <argument type="tagged_iterator" tag="nelmio_api_doc.route_argument_describer"/>
+    </service>
+    <service id="nelmio_api_doc.route_argument_describer.map_query_string" class="Nelmio\ApiDocBundle\RouteDescriber\RouteArgumentDescriber\SymfonyMapQueryStringDescriber">
+      <tag name="nelmio_api_doc.route_argument_describer" priority="0"/>
+    </service>
+    <service id="nelmio_api_doc.swagger.processor.map_query_string" class="Nelmio\ApiDocBundle\Processors\MapQueryStringProcessor">
+      <tag name="nelmio_api_doc.swagger.processor" priority="0"/>
+    </service>
+    <service id="nelmio_api_doc.route_argument_describer.map_request_payload" class="Nelmio\ApiDocBundle\RouteDescriber\RouteArgumentDescriber\SymfonyMapRequestPayloadDescriber">
+      <tag name="nelmio_api_doc.route_argument_describer" priority="0"/>
+    </service>
+    <service id="nelmio_api_doc.swagger.processor.map_request_payload" class="Nelmio\ApiDocBundle\Processors\MapRequestPayloadProcessor">
+      <tag name="nelmio_api_doc.swagger.processor" priority="0"/>
+    </service>
+    <service id="nelmio_api_doc.route_argument_describer.map_query_parameter" class="Nelmio\ApiDocBundle\RouteDescriber\RouteArgumentDescriber\SymfonyMapQueryParameterDescriber">
+      <tag name="nelmio_api_doc.route_argument_describer" priority="0"/>
     </service>
     <service id=".instanceof.Symfony\Contracts\Service\ServiceSubscriberInterface.0.App\Controller\AutreController" class="App\Controller\AutreController" autowire="true" abstract="true"/>
     <service id=".instanceof.Symfony\Bundle\FrameworkBundle\Controller\AbstractController.0.App\Controller\AutreController" class="App\Controller\AutreController" autowire="true" abstract="true"/>
@@ -4744,6 +5031,16 @@
         <argument key="serializer" type="service_closure" id="serializer"/>
       </argument>
     </service>
+    <service id=".service_locator.pe2KV2J" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator"/>
+      <argument type="collection">
+        <argument key="entityManager" type="service_closure" id="doctrine.orm.default_entity_manager"/>
+        <argument key="marqueVehiculeRepository" type="service_closure" id="App\Repository\MarqueVehiculeRepository"/>
+        <argument key="repository" type="service_closure" id="App\Repository\DowloadFileRepository"/>
+        <argument key="serializer" type="service_closure" id="serializer"/>
+        <argument key="urlGenerator" type="service_closure" id="router.default"/>
+      </argument>
+    </service>
     <service id=".service_locator.RY8LhGs" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
@@ -4777,19 +5074,48 @@
         <argument key="serializer" type="service_closure" id="serializer"/>
       </argument>
     </service>
-    <service id=".service_locator.W4ACqPd" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".errored.o1ioMxM" class="JMS\Serializer\SerializerInterface">
+      <tag name="container.error" message="Cannot determine controller argument for &quot;App\Controller\MonController::GetAllModele()&quot;: the $serializer argument is type-hinted with the non-existent class or interface: &quot;JMS\Serializer\SerializerInterface&quot;."/>
+    </service>
+    <service id=".service_locator.rKvDkjF" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator"/>
+      <argument type="collection">
+        <argument key="cache" type="service_closure" id="cache.app.taggable"/>
+        <argument key="repository" type="service_closure" id="App\Repository\ModeleTestRepository"/>
+        <argument key="serializer" type="service_closure" id=".errored.o1ioMxM"/>
+      </argument>
+    </service>
+    <service id=".errored.8ZelIpg" class="JMS\Serializer\SerializerInterface">
+      <tag name="container.error" message="Cannot determine controller argument for &quot;App\Controller\MonController::GetModeleUnique()&quot;: the $serializer argument is type-hinted with the non-existent class or interface: &quot;JMS\Serializer\SerializerInterface&quot;."/>
+    </service>
+    <service id=".service_locator.pwDx5_J" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
         <argument key="repository" type="service_closure" id="App\Repository\ModeleTestRepository"/>
-        <argument key="serializer" type="service_closure" id="serializer"/>
+        <argument key="serializer" type="service_closure" id=".errored.8ZelIpg"/>
       </argument>
     </service>
-    <service id=".service_locator.vkx0CD5" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".errored.VkI5yfj" class="JMS\Serializer\SerializerInterface">
+      <tag name="container.error" message="Cannot determine controller argument for &quot;App\Controller\MonController::creatModelsTest()&quot;: the $serializer argument is type-hinted with the non-existent class or interface: &quot;JMS\Serializer\SerializerInterface&quot;."/>
+    </service>
+    <service id=".service_locator.uS58GVi" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator"/>
+      <argument type="collection">
+        <argument key="entityManager" type="service_closure" id="doctrine.orm.default_entity_manager"/>
+        <argument key="interfaceUrl" type="service_closure" id="router.default"/>
+        <argument key="repository" type="service_closure" id="App\Repository\ModeleTestRepository"/>
+        <argument key="serializer" type="service_closure" id=".errored.VkI5yfj"/>
+      </argument>
+    </service>
+    <service id=".errored.bDDDXnm" class="JMS\Serializer\SerializerInterface">
+      <tag name="container.error" message="Cannot determine controller argument for &quot;App\Controller\MonController::updateModeleUnique()&quot;: the $serializer argument is type-hinted with the non-existent class or interface: &quot;JMS\Serializer\SerializerInterface&quot;."/>
+    </service>
+    <service id=".service_locator.gbncVNf" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
         <argument key="entityManager" type="service_closure" id="doctrine.orm.default_entity_manager"/>
         <argument key="repository" type="service_closure" id="App\Repository\ModeleTestRepository"/>
-        <argument key="serializer" type="service_closure" id="serializer"/>
+        <argument key="serializer" type="service_closure" id=".errored.bDDDXnm"/>
         <argument key="validator" type="service_closure" id="validator"/>
       </argument>
     </service>
@@ -4878,7 +5204,7 @@
         <argument key="serializer" type="service_closure" id="serializer"/>
       </argument>
     </service>
-    <service id=".service_locator.pnYUpCo" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator.cFIbj78" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
         <argument key="App\Controller\AutreController::GetAllType" type="service_closure" id=".service_locator.BkN6Win"/>
@@ -4898,6 +5224,7 @@
         <argument key="App\Controller\DowloadFilesController::createFile" type="service_closure" id=".service_locator.eJmiWeB"/>
         <argument key="App\Controller\MarqueVehiculeController::GetAllMarque" type="service_closure" id=".service_locator.FoeC1S9"/>
         <argument key="App\Controller\MarqueVehiculeController::GetUneMarqueVehicule" type="service_closure" id=".service_locator.FoeC1S9"/>
+        <argument key="App\Controller\MarqueVehiculeController::UpdateImage" type="service_closure" id=".service_locator.pe2KV2J"/>
         <argument key="App\Controller\MarqueVehiculeController::createMarqueVehicule" type="service_closure" id=".service_locator.j3fuGrH"/>
         <argument key="App\Controller\MarqueVehiculeController::deleteMarqueVehicule" type="service_closure" id=".service_locator.Xc7OmM0"/>
         <argument key="App\Controller\MarqueVehiculeController::updateMarqueVehicule" type="service_closure" id=".service_locator.XLWPdHN"/>
@@ -4906,11 +5233,11 @@
         <argument key="App\Controller\ModeleVehiculeController::createModeleVehicule" type="service_closure" id=".service_locator.dpqHdnm"/>
         <argument key="App\Controller\ModeleVehiculeController::deleteModeleVehicule" type="service_closure" id=".service_locator.pFr8VsZ"/>
         <argument key="App\Controller\ModeleVehiculeController::updatePiece" type="service_closure" id=".service_locator.N5P0Wj7"/>
-        <argument key="App\Controller\MonController::GetAllModele" type="service_closure" id=".service_locator.W4ACqPd"/>
-        <argument key="App\Controller\MonController::GetModeleUnique" type="service_closure" id=".service_locator.W4ACqPd"/>
-        <argument key="App\Controller\MonController::creatModelsTest" type="service_closure" id=".service_locator.kw2KoEC"/>
+        <argument key="App\Controller\MonController::GetAllModele" type="service_closure" id=".service_locator.rKvDkjF"/>
+        <argument key="App\Controller\MonController::GetModeleUnique" type="service_closure" id=".service_locator.pwDx5_J"/>
+        <argument key="App\Controller\MonController::creatModelsTest" type="service_closure" id=".service_locator.uS58GVi"/>
         <argument key="App\Controller\MonController::deleteModeleUnique" type="service_closure" id=".service_locator.j9NudlR"/>
-        <argument key="App\Controller\MonController::updateModeleUnique" type="service_closure" id=".service_locator.vkx0CD5"/>
+        <argument key="App\Controller\MonController::updateModeleUnique" type="service_closure" id=".service_locator.gbncVNf"/>
         <argument key="App\Controller\PieceController::GetAllPiece" type="service_closure" id=".service_locator.eCRFt3Y"/>
         <argument key="App\Controller\PieceController::GetPiece" type="service_closure" id=".service_locator.eCRFt3Y"/>
         <argument key="App\Controller\PieceController::createPiece" type="service_closure" id=".service_locator.HSrsule"/>
@@ -4951,6 +5278,7 @@
         <argument key="App\Controller\DowloadFilesController:createFile" type="service_closure" id=".service_locator.eJmiWeB"/>
         <argument key="App\Controller\MarqueVehiculeController:GetAllMarque" type="service_closure" id=".service_locator.FoeC1S9"/>
         <argument key="App\Controller\MarqueVehiculeController:GetUneMarqueVehicule" type="service_closure" id=".service_locator.FoeC1S9"/>
+        <argument key="App\Controller\MarqueVehiculeController:UpdateImage" type="service_closure" id=".service_locator.pe2KV2J"/>
         <argument key="App\Controller\MarqueVehiculeController:createMarqueVehicule" type="service_closure" id=".service_locator.j3fuGrH"/>
         <argument key="App\Controller\MarqueVehiculeController:deleteMarqueVehicule" type="service_closure" id=".service_locator.Xc7OmM0"/>
         <argument key="App\Controller\MarqueVehiculeController:updateMarqueVehicule" type="service_closure" id=".service_locator.XLWPdHN"/>
@@ -4959,11 +5287,11 @@
         <argument key="App\Controller\ModeleVehiculeController:createModeleVehicule" type="service_closure" id=".service_locator.dpqHdnm"/>
         <argument key="App\Controller\ModeleVehiculeController:deleteModeleVehicule" type="service_closure" id=".service_locator.pFr8VsZ"/>
         <argument key="App\Controller\ModeleVehiculeController:updatePiece" type="service_closure" id=".service_locator.N5P0Wj7"/>
-        <argument key="App\Controller\MonController:GetAllModele" type="service_closure" id=".service_locator.W4ACqPd"/>
-        <argument key="App\Controller\MonController:GetModeleUnique" type="service_closure" id=".service_locator.W4ACqPd"/>
-        <argument key="App\Controller\MonController:creatModelsTest" type="service_closure" id=".service_locator.kw2KoEC"/>
+        <argument key="App\Controller\MonController:GetAllModele" type="service_closure" id=".service_locator.rKvDkjF"/>
+        <argument key="App\Controller\MonController:GetModeleUnique" type="service_closure" id=".service_locator.pwDx5_J"/>
+        <argument key="App\Controller\MonController:creatModelsTest" type="service_closure" id=".service_locator.uS58GVi"/>
         <argument key="App\Controller\MonController:deleteModeleUnique" type="service_closure" id=".service_locator.j9NudlR"/>
-        <argument key="App\Controller\MonController:updateModeleUnique" type="service_closure" id=".service_locator.vkx0CD5"/>
+        <argument key="App\Controller\MonController:updateModeleUnique" type="service_closure" id=".service_locator.gbncVNf"/>
         <argument key="App\Controller\PieceController:GetAllPiece" type="service_closure" id=".service_locator.eCRFt3Y"/>
         <argument key="App\Controller\PieceController:GetPiece" type="service_closure" id=".service_locator.eCRFt3Y"/>
         <argument key="App\Controller\PieceController:createPiece" type="service_closure" id=".service_locator.HSrsule"/>
@@ -6006,7 +6334,7 @@
     </service>
     <service id="console.command_loader" class="Symfony\Component\Console\CommandLoader\ContainerCommandLoader" public="true">
       <tag name="container.no_preload"/>
-      <argument type="service" id=".service_locator.ivyi_yx"/>
+      <argument type="service" id=".service_locator.T.vApQL"/>
       <argument type="collection">
         <argument key="about">console.command.about</argument>
         <argument key="assets:install">console.command.assets_install</argument>
@@ -6075,6 +6403,7 @@
         <argument key="lexik:jwt:enable-encryption">lexik_jwt_authentication.enable_encryption_config_command</argument>
         <argument key="lexik:jwt:generate-token">lexik_jwt_authentication.generate_token_command</argument>
         <argument key="lexik:jwt:generate-keypair">lexik_jwt_authentication.generate_keypair_command</argument>
+        <argument key="nelmio:apidoc:dump">nelmio_api_doc.command.dump</argument>
         <argument key="make:auth">maker.auto_command.make_auth</argument>
         <argument key="make:command">maker.auto_command.make_command</argument>
         <argument key="make:twig-component">maker.auto_command.make_twig_component</argument>
@@ -6104,7 +6433,7 @@
         <argument key="make:security:form-login">maker.auto_command.make_security_form_login</argument>
       </argument>
     </service>
-    <service id=".service_locator.ivyi_yx" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator.T.vApQL" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
         <argument key="console.command.about" type="service_closure" id=".console.command.about.lazy"/>
@@ -6174,6 +6503,7 @@
         <argument key="lexik_jwt_authentication.enable_encryption_config_command" type="service_closure" id=".lexik_jwt_authentication.enable_encryption_config_command.lazy"/>
         <argument key="lexik_jwt_authentication.generate_token_command" type="service_closure" id=".lexik_jwt_authentication.generate_token_command.lazy"/>
         <argument key="lexik_jwt_authentication.generate_keypair_command" type="service_closure" id=".lexik_jwt_authentication.generate_keypair_command.lazy"/>
+        <argument key="nelmio_api_doc.command.dump" type="service_closure" id="nelmio_api_doc.command.dump"/>
         <argument key="maker.auto_command.make_auth" type="service_closure" id=".maker.auto_command.make_auth.lazy"/>
         <argument key="maker.auto_command.make_command" type="service_closure" id=".maker.auto_command.make_command.lazy"/>
         <argument key="maker.auto_command.make_twig_component" type="service_closure" id=".maker.auto_command.make_twig_component.lazy"/>
@@ -6282,8 +6612,6 @@
     <service id="Symfony\Component\Security\Csrf\CsrfTokenManagerInterface" alias="security.csrf.token_manager"/>
     <service id="Symfony\Component\Validator\Validator\ValidatorInterface" alias="validator"/>
     <service id="validator.mapping.class_metadata_factory" alias="validator"/>
-    <service id="Symfony\Component\Mime\MimeTypesInterface" alias="mime_types"/>
-    <service id="Symfony\Component\Mime\MimeTypeGuesserInterface" alias="mime_types"/>
     <service id="Doctrine\DBAL\Connection" alias="doctrine.dbal.default_connection"/>
     <service id="Doctrine\Persistence\ManagerRegistry" alias="doctrine"/>
     <service id="Doctrine\Common\Persistence\ManagerRegistry" alias="doctrine"/>
@@ -6335,11 +6663,14 @@
     <service id="lexik_jwt_authentication.encoder" alias="lexik_jwt_authentication.encoder.lcobucci" public="true"/>
     <service id="Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface" alias="lexik_jwt_authentication.encoder.lcobucci"/>
     <service id="lexik_jwt_authentication.key_loader" alias="lexik_jwt_authentication.key_loader.raw" public="true"/>
+    <service id="nelmio_api_doc.controller.swagger" alias="nelmio_api_doc.controller.swagger_json" public="true"/>
+    <service id="nelmio_api_doc.generator" alias="nelmio_api_doc.generator.default" public="true"/>
     <service id="container.env_var_processors_locator" alias=".service_locator.w7.f4fT" public="true"/>
-    <service id="argument_resolver.controller_locator" alias=".service_locator.pnYUpCo"/>
+    <service id="argument_resolver.controller_locator" alias=".service_locator.cFIbj78"/>
     <service id="doctrine.id_generator_locator" alias=".service_locator.KLVvNIq"/>
     <service id="Psr\Log\LoggerInterface" alias="logger"/>
     <service id=".service_locator.Rlg80n6" alias=".service_locator.WfO.0Vv"/>
+    <service id=".service_locator.9L433w3" alias="nelmio_api_doc.generator_locator"/>
     <service id=".service_locator.bJ.4HC5" alias=".service_locator.w7.f4fT"/>
     <service id=".service_locator.ndTnCo_" alias=".service_locator.Bo6LrAm"/>
     <service id=".service_locator.On7TBCs" alias=".service_locator.kw2KoEC"/>
@@ -6350,10 +6681,13 @@
     <service id=".service_locator.FF6axCS" alias=".service_locator.j3fuGrH"/>
     <service id=".service_locator.hiPBavJ" alias=".service_locator.Xc7OmM0"/>
     <service id=".service_locator.aQGo9T6" alias=".service_locator.XLWPdHN"/>
+    <service id=".service_locator.MAxp7BD" alias=".service_locator.pe2KV2J"/>
     <service id=".service_locator.oW9ITiq" alias=".service_locator.dpqHdnm"/>
     <service id=".service_locator.hcy1RPt" alias=".service_locator.pFr8VsZ"/>
     <service id=".service_locator.sg6.tw6" alias=".service_locator.N5P0Wj7"/>
-    <service id=".service_locator.am8NNvr" alias=".service_locator.vkx0CD5"/>
+    <service id=".service_locator.z20vLYS" alias=".service_locator.rKvDkjF"/>
+    <service id=".service_locator.fAbwk3N" alias=".service_locator.uS58GVi"/>
+    <service id=".service_locator.N1a53cJ" alias=".service_locator.gbncVNf"/>
     <service id=".service_locator.AoLJ8hZ" alias=".service_locator.HSrsule"/>
     <service id=".service_locator.A7T6IO6" alias=".service_locator.fp3a.JX"/>
     <service id=".service_locator.nIcw_T9" alias=".service_locator.1mmku44"/>
@@ -6362,7 +6696,7 @@
     <service id=".service_locator.DxiWG9n" alias=".service_locator.Ii2msFJ"/>
     <service id=".service_locator.2x2f0KJ" alias=".service_locator.GF4LUwf"/>
     <service id=".service_locator.lmaQmz7" alias=".service_locator.RGXR_1y"/>
-    <service id=".service_locator.EkvMzhE" alias=".service_locator.pnYUpCo"/>
+    <service id=".service_locator.Ar6jRY2" alias=".service_locator.cFIbj78"/>
     <service id=".service_locator.BFrsqsn" alias=".service_locator.F9PKc.7"/>
     <service id=".service_locator.LMuqDDe" alias=".service_locator.VHsrTPK"/>
     <service id=".service_locator.jUv.zyj" alias=".service_locator.O2p6Lk7"/>
@@ -6392,12 +6726,15 @@
     <service id=".service_locator.XCHVLU_" alias=".service_locator.j3fuGrH"/>
     <service id=".service_locator.G9BpUnI" alias=".service_locator.Xc7OmM0"/>
     <service id=".service_locator.fnaOit0" alias=".service_locator.XLWPdHN"/>
+    <service id=".service_locator._5zxb.9" alias=".service_locator.pe2KV2J"/>
     <service id=".service_locator.72o_ZD0" alias=".service_locator.RY8LhGs"/>
     <service id=".service_locator.THuPZ.o" alias=".service_locator.dpqHdnm"/>
     <service id=".service_locator.LOOuRou" alias=".service_locator.pFr8VsZ"/>
     <service id=".service_locator.Y9ifXSz" alias=".service_locator.N5P0Wj7"/>
-    <service id=".service_locator.K4..t2r" alias=".service_locator.W4ACqPd"/>
-    <service id=".service_locator.nIMgVcC" alias=".service_locator.vkx0CD5"/>
+    <service id=".service_locator.BXovOGh" alias=".service_locator.rKvDkjF"/>
+    <service id=".service_locator.mHkYvR8" alias=".service_locator.pwDx5_J"/>
+    <service id=".service_locator.Ge6eUsD" alias=".service_locator.uS58GVi"/>
+    <service id=".service_locator.pnE0CU4" alias=".service_locator.gbncVNf"/>
     <service id=".service_locator.M6gy422" alias=".service_locator.eCRFt3Y"/>
     <service id=".service_locator.VSw7My0" alias=".service_locator.HSrsule"/>
     <service id=".service_locator.71FKAkZ" alias=".service_locator.fp3a.JX"/>

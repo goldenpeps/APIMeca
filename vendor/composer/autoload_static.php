@@ -12,9 +12,8 @@ class ComposerStaticInitb564805940d8a1a83cba27b3b8c04970
         '662a729f963d39afe703c9d9b7ab4a8c' => __DIR__ . '/..' . '/symfony/polyfill-php83/bootstrap.php',
         '2203a247e6fda86070a5e4e07aed533a' => __DIR__ . '/..' . '/symfony/clock/Resources/now.php',
         '667aeda72477189d0494fecd327c3641' => __DIR__ . '/..' . '/symfony/var-dumper/Resources/functions/dump.php',
-        'e69f7f6ee287b969198c3c9d6777bd38' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/bootstrap.php',
-        'f598d06aa772fa33d905e87be6398fb1' => __DIR__ . '/..' . '/symfony/polyfill-intl-idn/bootstrap.php',
         '8825ede83f2f289127722d4e842cf7e8' => __DIR__ . '/..' . '/symfony/polyfill-intl-grapheme/bootstrap.php',
+        'e69f7f6ee287b969198c3c9d6777bd38' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/bootstrap.php',
         'b6b991a57620e2fb6b2f66f03fe9ddc2' => __DIR__ . '/..' . '/symfony/string/Resources/functions.php',
     );
 
@@ -27,17 +26,12 @@ class ComposerStaticInitb564805940d8a1a83cba27b3b8c04970
         array (
             'Webmozart\\Assert\\' => 17,
         ),
-        'V' => 
-        array (
-            'Vich\\UploaderBundle\\' => 20,
-        ),
         'S' => 
         array (
             'Symfony\\Runtime\\Symfony\\Component\\' => 34,
             'Symfony\\Polyfill\\Php83\\' => 23,
             'Symfony\\Polyfill\\Mbstring\\' => 26,
             'Symfony\\Polyfill\\Intl\\Normalizer\\' => 33,
-            'Symfony\\Polyfill\\Intl\\Idn\\' => 26,
             'Symfony\\Polyfill\\Intl\\Grapheme\\' => 31,
             'Symfony\\Flex\\' => 13,
             'Symfony\\Contracts\\Translation\\' => 30,
@@ -60,7 +54,7 @@ class ComposerStaticInitb564805940d8a1a83cba27b3b8c04970
             'Symfony\\Component\\PropertyAccess\\' => 33,
             'Symfony\\Component\\Process\\' => 26,
             'Symfony\\Component\\PasswordHasher\\' => 33,
-            'Symfony\\Component\\Mime\\' => 23,
+            'Symfony\\Component\\OptionsResolver\\' => 34,
             'Symfony\\Component\\HttpKernel\\' => 29,
             'Symfony\\Component\\HttpFoundation\\' => 33,
             'Symfony\\Component\\Finder\\' => 25,
@@ -88,13 +82,14 @@ class ComposerStaticInitb564805940d8a1a83cba27b3b8c04970
             'PhpParser\\' => 10,
             'PHPStan\\PhpDocParser\\' => 21,
         ),
+        'O' => 
+        array (
+            'OpenApi\\' => 8,
+        ),
         'N' => 
         array (
+            'Nelmio\\ApiDocBundle\\' => 20,
             'Namshi\\JOSE\\' => 12,
-        ),
-        'M' => 
-        array (
-            'Metadata\\' => 9,
         ),
         'L' => 
         array (
@@ -144,10 +139,6 @@ class ComposerStaticInitb564805940d8a1a83cba27b3b8c04970
         array (
             0 => __DIR__ . '/..' . '/webmozart/assert/src',
         ),
-        'Vich\\UploaderBundle\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/vich/uploader-bundle/src',
-        ),
         'Symfony\\Runtime\\Symfony\\Component\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/runtime/Internal',
@@ -163,10 +154,6 @@ class ComposerStaticInitb564805940d8a1a83cba27b3b8c04970
         'Symfony\\Polyfill\\Intl\\Normalizer\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer',
-        ),
-        'Symfony\\Polyfill\\Intl\\Idn\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/symfony/polyfill-intl-idn',
         ),
         'Symfony\\Polyfill\\Intl\\Grapheme\\' => 
         array (
@@ -256,9 +243,9 @@ class ComposerStaticInitb564805940d8a1a83cba27b3b8c04970
         array (
             0 => __DIR__ . '/..' . '/symfony/password-hasher',
         ),
-        'Symfony\\Component\\Mime\\' => 
+        'Symfony\\Component\\OptionsResolver\\' => 
         array (
-            0 => __DIR__ . '/..' . '/symfony/mime',
+            0 => __DIR__ . '/..' . '/symfony/options-resolver',
         ),
         'Symfony\\Component\\HttpKernel\\' => 
         array (
@@ -352,13 +339,17 @@ class ComposerStaticInitb564805940d8a1a83cba27b3b8c04970
         array (
             0 => __DIR__ . '/..' . '/phpstan/phpdoc-parser/src',
         ),
+        'OpenApi\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/zircote/swagger-php/src',
+        ),
+        'Nelmio\\ApiDocBundle\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/nelmio/api-doc-bundle',
+        ),
         'Namshi\\JOSE\\' => 
         array (
             0 => __DIR__ . '/..' . '/namshi/jose/src/Namshi/JOSE',
-        ),
-        'Metadata\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/jms/metadata/src',
         ),
         'Lexik\\Bundle\\JWTAuthenticationBundle\\' => 
         array (

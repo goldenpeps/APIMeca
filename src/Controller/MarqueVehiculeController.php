@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\MarqueVehicule;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\DowloadFileRepository;
 use App\Repository\MarqueVehiculeRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,49 +17,72 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class MarqueVehiculeController extends AbstractController
 {
-    #[Route('/api/marqueController', name: 'marqueVehicule.GetAll',methods:["GET"])]
-    public function GetAllMarque(MarqueVehiculeRepository $repositoryV, SerializerInterface $serializer ): JsonResponse
+    #[Route('/api/marqueController', name: 'marqueVehicule.GetAll', methods: ["GET"])]
+    public function GetAllMarque(MarqueVehiculeRepository $repositoryV, SerializerInterface $serializer): JsonResponse
     {
         $marqueVehiculeAll = $repositoryV->findAll();
-        $jsonMarqueVehiculeAll  = $serializer->serialize($marqueVehiculeAll,'json');
-         return new JsonResponse($jsonMarqueVehiculeAll, Response::HTTP_OK,[],true);
+        $jsonMarqueVehiculeAll  = $serializer->serialize($marqueVehiculeAll, 'json');
+        return new JsonResponse($jsonMarqueVehiculeAll, Response::HTTP_OK, [], true);
     }
 
-    #[Route('/api/marqueController/{id}', name: 'marqueVehicule.Get',methods:["GET"])]
-    public function GetUneMarqueVehicule(int  $id, MarqueVehiculeRepository $repositoryV, SerializerInterface $serializer ): JsonResponse
+    #[Route('/api/marqueController/{id}', name: 'marqueVehicule.Get', methods: ["GET"])]
+    public function GetUneMarqueVehicule(int  $id, MarqueVehiculeRepository $repositoryV, SerializerInterface $serializer): JsonResponse
     {
         $marqueVehicule = $repositoryV->find($id);
-        $jsonMarqueVehicule = $serializer->serialize($marqueVehicule,'json');
-         return new JsonResponse($jsonMarqueVehicule, Response::HTTP_OK,[],true);
+        $jsonMarqueVehicule = $serializer->serialize($marqueVehicule, 'json');
+        return new JsonResponse($jsonMarqueVehicule, Response::HTTP_OK, [], true);
     }
-    #[Route('/api/marqueController', name: 'marqueVehicule.Create',methods:["POST"])]
-    public function createMarqueVehicule(Request $request, MarqueVehiculeRepository $repositoryV,EntityManagerInterface $entityManager, UrlGeneratorInterface $interfaceUrl ,SerializerInterface $serializer ): JsonResponse
+    #[Route('/api/marqueController', name: 'marqueVehicule.Create', methods: ["POST"])]
+    public function createMarqueVehicule(Request $request, MarqueVehiculeRepository $repositoryV, EntityManagerInterface $entityManager, UrlGeneratorInterface $interfaceUrl, SerializerInterface $serializer): JsonResponse
     {
-        $marqueVehicule = $serializer->deserialize($request->getContent(),MarqueVehicule::class,'json');
+        $marqueVehicule = $serializer->deserialize($request->getContent(), MarqueVehicule::class, 'json');
         $entityManager->persist($marqueVehicule);
         $entityManager->flush();
-        $jsonMarqueVehicule = $serializer->serialize($marqueVehicule,'json');
-        $localion = $interfaceUrl->generate("marqueVehicule.Get",["id"=>$marqueVehicule->getId()],UrlGeneratorInterface::ABSOLUTE_URL);
-        return new JsonResponse($jsonMarqueVehicule, Response::HTTP_CREATED,[],true);
+        $jsonMarqueVehicule = $serializer->serialize($marqueVehicule, 'json');
+        $localion = $interfaceUrl->generate("marqueVehicule.Get", ["id" => $marqueVehicule->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
+        return new JsonResponse($jsonMarqueVehicule, Response::HTTP_CREATED, [], true);
     }
 
-    #[Route('/api/marqueController/{id}', name: 'marqueVehicule.delete',methods:["DELETE"])]
-    public function deleteMarqueVehicule(int  $id, MarqueVehiculeRepository $repositoryV,EntityManagerInterface $entityManager ): JsonResponse
+    #[Route('/api/marqueController/{id}', name: 'marqueVehicule.delete', methods: ["DELETE"])]
+    public function deleteMarqueVehicule(int  $id, MarqueVehiculeRepository $repositoryV, EntityManagerInterface $entityManager): JsonResponse
     {
         $marqueVehicule = $repositoryV->find($id);
         $entityManager->remove($marqueVehicule);
         $entityManager->flush();
-        return new JsonResponse(null, Response::HTTP_NO_CONTENT,[]);
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT, []);
     }
 
-    #[Route('/api/marqueController/{id}', name: 'marqueVehicule.update',methods:["PATCH","PUT"])]
-    public function updateMarqueVehicule(int  $id, Request $request, MarqueVehiculeRepository $repositoryV,EntityManagerInterface $entityManager ,SerializerInterface $serializer ): JsonResponse
+    #[Route('/api/marqueController/{id}', name: 'marqueVehicule.update', methods: ["PATCH", "PUT"])]
+    public function updateMarqueVehicule(int  $id, Request $request, MarqueVehiculeRepository $repositoryV, EntityManagerInterface $entityManager, SerializerInterface $serializer): JsonResponse
     {
         $marqueVehicule = $repositoryV->find($id);
-        $updateMarqueVehicule = $serializer->deserialize($request->getContent(),MarqueVehicule::class,'json',[AbstractNormalizer::OBJECT_TO_POPULATE =>$marqueVehicule]); 
+        $updateMarqueVehicule = $serializer->deserialize($request->getContent(), MarqueVehicule::class, 'json', [AbstractNormalizer::OBJECT_TO_POPULATE => $marqueVehicule]);
         $entityManager->persist($marqueVehicule);
         $entityManager->flush();
-        $jsonMarqueVehicule = $serializer->serialize($marqueVehicule,'json',);
-         return new JsonResponse($jsonMarqueVehicule, Response::HTTP_OK,[],true);
+        $jsonMarqueVehicule = $serializer->serialize($marqueVehicule, 'json',);
+        return new JsonResponse($jsonMarqueVehicule, Response::HTTP_OK, [], true);
+    }
+
+    #[Route('/api/marqueController/setimage/{idv}/{idI}', name: 'marqueVehicule.update', methods: ["PUT"])]
+    public function UpdateImage(int $idv, int $idI, DowloadFileRepository $repository, MarqueVehiculeRepository $marqueVehiculeRepository, SerializerInterface $serializer, Request $request, EntityManagerInterface $entityManager, UrlGeneratorInterface $urlGenerator): JsonResponse
+    {
+        $marqueVehicule = $marqueVehiculeRepository->find($idv);
+    
+        $Image = $repository->find($idI);
+        $Image->setEtat("old");
+        if (!$marqueVehicule) {
+            return new JsonResponse(['error' => 'marqueVehicule not found'], Response::HTTP_NOT_FOUND);
+        }
+        if (!$Image) {
+            return new JsonResponse(['error' => 'User ID not provided'], Response::HTTP_BAD_REQUEST);
+        }
+        if ($marqueVehicule->getImage()) {
+                    return new JsonResponse(['error' => 'File already associated with a user'], Response::HTTP_BAD_REQUEST);
+                }
+                $marqueVehicule->setImage($Image);
+                    $entityManager->persist($marqueVehicule);
+                    $entityManager->flush();
+                    $jsonCards = $serializer->serialize($marqueVehicule, 'json');
+                    return new JsonResponse($jsonCards, Response::HTTP_OK, [], true);
     }
 }
