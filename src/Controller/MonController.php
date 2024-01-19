@@ -7,8 +7,7 @@ use App\Entity\ModeleTest;
 use Metadata\Cache\CacheInterface;
 use App\Repository\ModeleTestRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use JMS\Serializer\SerializerInterface;
-use JMS\Serializer\SerializationContext;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,6 +20,9 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Security;
+use OpenApi\Attributes as OA;
 
 class MonController extends AbstractController
 {
@@ -33,30 +35,32 @@ class MonController extends AbstractController
         ]);
     }
 
-    #[Route('/api/monControllerT', name: 'modeleTests.GetAll',methods:["GET"])]
-    #[IsGranted("ADMIN",message:"nuh nuh")]
-    public function GetAllModele(ModeleTestRepository $repository, SerializerInterface $serializer,TagAwareCacheInterface  $cache): JsonResponse
-    {
-        $modeleTests = $repository->findAll();
-        // dd($modeleTests);
-        // $jsonmodeleTests = $serializer->serialize($modeleTests,'json', ["groups"=> "GetmodeleTests"]);
+    // #[Route('/api/monControllerT', name: 'modeleTests.GetAll',methods:["GET"])]
+    // #[OA\Tag(name: 'Ne pas tester exercice')]
+    // #[IsGranted("ADMIN",message:"nuh nuh")]
+    // public function GetAllModele(ModeleTestRepository $repository, SerializerInterface $serializer,TagAwareCacheInterface  $cache): JsonResponse
+    // {
+    //     $modeleTests = $repository->findAll();
+    //     // dd($modeleTests);
+    //     // $jsonmodeleTests = $serializer->serialize($modeleTests,'json', ["groups"=> "GetmodeleTests"]);
         
-        $idCache ="GetAllModele";
-        $jsonmodeleTests= $cache->get($idCache, function (ItemInterface $item) use ($repository, $serializer){
-            $item->tag("modeleCache");
-            $listeModele = $repository->findAll();
-            $context = SerializationContext::create()->setGroups(['GetAllModele']);
-            return $serializer->serialize($listeModele, 'json', $context);
-        });
+    //     // $idCache ="GetAllModele";
+    //     // $jsonmodeleTests= $cache->get($idCache, function (ItemInterface $item) use ($repository, $serializer){
+    //     //     $item->tag("modeleCache");
+    //     //     $listeModele = $repository->findAll();
+    //     //     $context = SerializationContext::create()->setGroups(['GetAllModele']);
+    //     //     return $serializer->serialize($listeModele, 'json', $context);
+    //     // });
 
-         return new JsonResponse($jsonmodeleTests, Response::HTTP_OK,[],true);
-        // return $this->json([
-        //     'message' => 'Welcome to your new controller!',
-        //     'path' => 'src/Controller/MonController.php',
-        // ]);
-    }
+    //     //  return new JsonResponse($jsonmodeleTests, Response::HTTP_OK,[],true);
+    //     // // return $this->json([
+    //     //     'message' => 'Welcome to your new controller!',
+    //     //     'path' => 'src/Controller/MonController.php',
+    //     // ]);
+    // }
 
     #[Route('/api/monControllerT/{id}', name: 'modeleTests.Get',methods:["GET"])]
+    #[OA\Tag(name: 'Ne pas tester exercice')]
     public function GetModeleUnique(int  $id, ModeleTestRepository $repository, SerializerInterface $serializer ): JsonResponse
     {
         $modeleTest = $repository->find($id);
@@ -70,6 +74,7 @@ class MonController extends AbstractController
     }
     //recuper plusieur donné
     #[Route('/api/monControllerT', name: 'modeleTests.Create',methods:["POST"])]
+    #[OA\Tag(name: 'Ne pas tester exercice')]
     public function creatModelsTest(Request $request, ModeleTestRepository $repository,EntityManagerInterface $entityManager, UrlGeneratorInterface $interfaceUrl ,SerializerInterface $serializer ): JsonResponse
     {
        
@@ -86,6 +91,7 @@ class MonController extends AbstractController
     }
     //suprimer donnée
     #[Route('/api/monControllerT/{id}', name: 'modeleTests.delete',methods:["DELETE"])]
+    #[OA\Tag(name: 'Ne pas tester exercice')]
     public function deleteModeleUnique(int  $id, ModeleTestRepository $repository,EntityManagerInterface $entityManager ): JsonResponse
     {
         $modeleTest = $repository->find($id);
@@ -100,6 +106,7 @@ class MonController extends AbstractController
     }
     //mis a jour  
     #[Route('/api/monControllerT/{id}', name: 'modeleTests.update',methods:["PATCH","PUT"])]
+    #[OA\Tag(name: 'Ne pas tester exercice')]
     public function updateModeleUnique(int  $id,ValidatorInterface $validator, Request $request, ModeleTestRepository $repository,EntityManagerInterface $entityManager ,SerializerInterface $serializer ): JsonResponse
     {
         $modeleTest = $repository->find($id);

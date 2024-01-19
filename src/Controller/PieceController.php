@@ -15,10 +15,21 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Security;
+use OpenApi\Attributes as OA;
 class PieceController extends AbstractController
 {
     #[Route('/api/PieceController', name: 'Pieces.GetAll',methods:["GET"])]
+        #[OA\Response(
+        response: 200,
+        description: 'Returns the rewards of an user',
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(ref: new Model(type: PieceModeleController::class, groups:  ["GetId", "GetNom", "GetReference", "GetTypePiece"]))
+        )
+    )]
+    #[OA\Tag(name: 'Piece')]
     public function GetAllPiece(PieceRepository $repositoryP, SerializerInterface $serializer ): JsonResponse
     {
         $PieceAll = $repositoryP->findAll();
@@ -28,6 +39,15 @@ class PieceController extends AbstractController
     }
 
     #[Route('/api/PieceController/{id}', name: 'Pieces.Get',methods:["GET"])]
+    #[OA\Response(
+        response: 200,
+        description: 'Returns the rewards of an user',
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(ref: new Model(type: PieceModeleController::class, groups:  ["GetId", "GetNom", "GetReference", "GetTypePiece"]))
+        )
+    )]
+    #[OA\Tag(name: 'Piece')]
     public function GetPiece(int  $id, PieceRepository $repositoryP, SerializerInterface $serializer ): JsonResponse
     {
         $Piece = $repositoryP->find($id);
@@ -35,13 +55,12 @@ class PieceController extends AbstractController
          return new JsonResponse($jsonPiece, Response::HTTP_OK,[],true);
     }
     #[Route('/api/PieceController', name: 'Pieces.Create',methods:["POST"])]
+    #[OA\Tag(name: 'Piece')]
     public function createPiece(Request $request, TypePieceRepository $repositoryTP,EntityManagerInterface $entityManager, UrlGeneratorInterface $interfaceUrl ,SerializerInterface $serializer ): JsonResponse
     {
         $Piece = $serializer->deserialize($request->getContent(),Piece::class,'json');
-
         $TypePiece = $repositoryTP->find($request->toArray()['type_piece'] ?? -1);
         $Piece->setIdTypePiece($TypePiece);
-
         $entityManager->persist($Piece);
         $entityManager->flush();
         $jsonPiece = $serializer->serialize($Piece,'json',["groups"=> "GetNom"]);
@@ -50,6 +69,7 @@ class PieceController extends AbstractController
     }
 
     #[Route('/api/PieceController/{id}', name: 'Pieces.delete',methods:["DELETE"])]
+    #[OA\Tag(name: 'Piece')]
     public function deletePiece(int  $id, PieceRepository $repositoryP,EntityManagerInterface $entityManager ): JsonResponse
     {
         $Piece = $repositoryP->find($id);
@@ -59,6 +79,7 @@ class PieceController extends AbstractController
     }
 
     #[Route('/api/PieceController/{id}', name: 'Pieces.update',methods:["PATCH","PUT"])]
+    #[OA\Tag(name: 'Piece')]
     public function updatePiece(int  $id, Request $request, PieceRepository $repositoryP,TypePieceRepository $repositoryTP, EntityManagerInterface $entityManager ,SerializerInterface $serializer ): JsonResponse
     {
         $Piece = $repositoryP->find($id);

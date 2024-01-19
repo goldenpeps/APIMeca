@@ -2,10 +2,11 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\Collection;
 use App\Repository\MarqueVehiculeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: MarqueVehiculeRepository::class)]
 class MarqueVehicule
@@ -13,9 +14,11 @@ class MarqueVehicule
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups("id")]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups("libelle")]
     private ?string $libelle_vehicule = null;
 
     #[ORM\OneToMany(mappedBy: 'id_marqueVehicule', targetEntity: ModeleVehicule::class)]

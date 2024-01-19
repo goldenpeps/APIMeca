@@ -14,25 +14,49 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Security;
+use OpenApi\Attributes as OA;
 
 class MarqueVehiculeController extends AbstractController
 {
     #[Route('/api/marqueController', name: 'marqueVehicule.GetAll', methods: ["GET"])]
+    #[OA\Response(
+        response: 200,
+        description: 'Returns the rewards of an user',
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(ref: new Model(type: MarqueVehicule::class, groups: ['id','libelle']))
+        )
+    )]
+    #[OA\Tag(name: 'Marque')]
+  
+
     public function GetAllMarque(MarqueVehiculeRepository $repositoryV, SerializerInterface $serializer): JsonResponse
     {
         $marqueVehiculeAll = $repositoryV->findAll();
-        $jsonMarqueVehiculeAll  = $serializer->serialize($marqueVehiculeAll, 'json');
+        $jsonMarqueVehiculeAll  = $serializer->serialize($marqueVehiculeAll, 'json', ["groups" => ["id","libelle"]]);
         return new JsonResponse($jsonMarqueVehiculeAll, Response::HTTP_OK, [], true);
     }
 
     #[Route('/api/marqueController/{id}', name: 'marqueVehicule.Get', methods: ["GET"])]
+    #[OA\Response(
+        response: 200,
+        description: 'Returns the rewards of an user',
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(ref: new Model(type: MarqueVehicule::class, groups: ['id','libelle']))
+        )
+    )]
+    #[OA\Tag(name: 'Marque')]
     public function GetUneMarqueVehicule(int  $id, MarqueVehiculeRepository $repositoryV, SerializerInterface $serializer): JsonResponse
     {
         $marqueVehicule = $repositoryV->find($id);
-        $jsonMarqueVehicule = $serializer->serialize($marqueVehicule, 'json');
+        $jsonMarqueVehicule = $serializer->serialize($marqueVehicule, 'json',["groups" => ["id","libelle"]]);
         return new JsonResponse($jsonMarqueVehicule, Response::HTTP_OK, [], true);
     }
     #[Route('/api/marqueController', name: 'marqueVehicule.Create', methods: ["POST"])]
+    #[OA\Tag(name: 'Marque')]
     public function createMarqueVehicule(Request $request, MarqueVehiculeRepository $repositoryV, EntityManagerInterface $entityManager, UrlGeneratorInterface $interfaceUrl, SerializerInterface $serializer): JsonResponse
     {
         $marqueVehicule = $serializer->deserialize($request->getContent(), MarqueVehicule::class, 'json');
@@ -44,6 +68,7 @@ class MarqueVehiculeController extends AbstractController
     }
 
     #[Route('/api/marqueController/{id}', name: 'marqueVehicule.delete', methods: ["DELETE"])]
+    #[OA\Tag(name: 'Marque')]
     public function deleteMarqueVehicule(int  $id, MarqueVehiculeRepository $repositoryV, EntityManagerInterface $entityManager): JsonResponse
     {
         $marqueVehicule = $repositoryV->find($id);
@@ -53,6 +78,7 @@ class MarqueVehiculeController extends AbstractController
     }
 
     #[Route('/api/marqueController/{id}', name: 'marqueVehicule.update', methods: ["PATCH", "PUT"])]
+    #[OA\Tag(name: 'Marque')]
     public function updateMarqueVehicule(int  $id, Request $request, MarqueVehiculeRepository $repositoryV, EntityManagerInterface $entityManager, SerializerInterface $serializer): JsonResponse
     {
         $marqueVehicule = $repositoryV->find($id);
@@ -64,6 +90,7 @@ class MarqueVehiculeController extends AbstractController
     }
 
     #[Route('/api/marqueController/setimage/{idv}/{idI}', name: 'marqueVehicule.update', methods: ["PUT"])]
+    #[OA\Tag(name: 'Marque')]
     public function UpdateImage(int $idv, int $idI, DowloadFileRepository $repository, MarqueVehiculeRepository $marqueVehiculeRepository, SerializerInterface $serializer, Request $request, EntityManagerInterface $entityManager, UrlGeneratorInterface $urlGenerator): JsonResponse
     {
         $marqueVehicule = $marqueVehiculeRepository->find($idv);

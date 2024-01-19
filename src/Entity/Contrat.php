@@ -2,10 +2,11 @@
 
 namespace App\Entity;
 
-use App\Repository\ContratRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\ContratRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ContratRepository::class)]
 class Contrat
@@ -13,24 +14,32 @@ class Contrat
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups("id")]
     private ?int $id = null;
 
     #[ORM\Column]
+    #[Groups("PrixTotal")]
     private ?float $PrixTotal = null;
 
     #[ORM\Column]
+    #[Groups("Create_at")]
     private ?\DateTimeImmutable $Create_at = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups("EtatContrat")]
     private ?string $EtatContrat = null;
 
     #[ORM\ManyToOne(inversedBy: 'ContratReferenceUtilisateurMecano')]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups("Id_utilisateurContrat")]
     private ?UtilisateurMecano $Id_utilisateurContrat = null;
 
     #[ORM\ManyToMany(targetEntity: Piece::class, inversedBy: 'Assosiative_PieceContrat')]
+    #[Groups("Assosiative_PieceContrat")]
     private Collection $AssosiationContratPiece;
 
     #[ORM\Column]
+    #[Groups("Update_at")]
     private ?\DateTimeImmutable $Update_at = null;
 
     public function __construct()

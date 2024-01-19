@@ -13,18 +13,40 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Security;
+use OpenApi\Attributes as OA;
 class DowloadFilesController extends AbstractController
 {
-    #[Route('/dowload/files', name: 'app.index')]
-    public function index(): JsonResponse
+    // #[Route('/dowload/files', name: 'app.index')]
+    // #[OA\Tag(name: 'Dowload')]
+    // public function index(): JsonResponse
+    // {
+    //     return $this->json([
+    //         'message' => 'Welcome to your new controller!',
+    //         'path' => 'src/Controller/DowloadFilesController.php',
+    //     ]);
+    // }
+
+    #[Route('/api/filesAll', name: 'Download.GetAll',methods:["GET"])]
+    #[OA\Response(
+        response: 200,
+        description: 'Returns the rewards of an user',
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(ref: new Model(type: DowloadFilesController::class, groups: ["GetNomImage","mimeType","slug","etat","realName","id","name"]))
+        )
+    )]
+    #[OA\Tag(name: 'Dowload')]
+    public function GetAllImage(DowloadFileRepository $repositoryMV, SerializerInterface $serializer ): JsonResponse
     {
-        return $this->json([
-            'message' => 'Welcome to your new controller!',
-            'path' => 'src/Controller/DowloadFilesController.php',
-        ]);
+        $modeleVehiculeAll = $repositoryMV->findAll();
+        $jsonModeleVehiculeAll  = $serializer->serialize($modeleVehiculeAll,'json', ["groups" => ["GetNomImage","mimeType","slug","etat","realName","id","name"]]);
+         return new JsonResponse($jsonModeleVehiculeAll, Response::HTTP_OK,[],true);
     }
+
     #[Route('/api/files', name: 'app_dowload_files', methods: ["POST"])]
+    #[OA\Tag(name: 'Dowload')]
     public function createFile(Request $request, DowloadFileRepository  $dowloadFileRepository, EntityManagerInterface $entityManagerInterface, UrlGeneratorInterface $urlGeneratorInterface): JsonResponse
     {
         $newFile = new DowloadFile();

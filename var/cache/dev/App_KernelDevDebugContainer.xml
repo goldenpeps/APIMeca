@@ -21,6 +21,7 @@
       <parameter key="SecurityBundle">Symfony\Bundle\SecurityBundle\SecurityBundle</parameter>
       <parameter key="LexikJWTAuthenticationBundle">Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle</parameter>
       <parameter key="NelmioApiDocBundle">Nelmio\ApiDocBundle\NelmioApiDocBundle</parameter>
+      <parameter key="TwigBundle">Symfony\Bundle\TwigBundle\TwigBundle</parameter>
     </parameter>
     <parameter key="kernel.bundles_metadata" type="collection">
       <parameter key="FrameworkBundle" type="collection">
@@ -55,6 +56,10 @@
         <parameter key="path">/var/www/EwanAPI/vendor/nelmio/api-doc-bundle</parameter>
         <parameter key="namespace">Nelmio\ApiDocBundle</parameter>
       </parameter>
+      <parameter key="TwigBundle" type="collection">
+        <parameter key="path">/var/www/EwanAPI/vendor/symfony/twig-bundle</parameter>
+        <parameter key="namespace">Symfony\Bundle\TwigBundle</parameter>
+      </parameter>
     </parameter>
     <parameter key="kernel.charset">UTF-8</parameter>
     <parameter key="kernel.container_class">App_KernelDevDebugContainer</parameter>
@@ -85,6 +90,8 @@
     <parameter key="kernel.enabled_locales" type="collection"/>
     <parameter key="kernel.error_controller">error_controller</parameter>
     <parameter key="debug.file_link_format">%env(default::SYMFONY_IDE)%</parameter>
+    <parameter key="asset.request_context.base_path">null</parameter>
+    <parameter key="asset.request_context.secure">null</parameter>
     <parameter key="debug.error_handler.throw_at">-1</parameter>
     <parameter key="debug.container.dump">/var/www/EwanAPI/var/cache/dev/App_KernelDevDebugContainer.xml</parameter>
     <parameter key="router.request_context.host">localhost</parameter>
@@ -201,6 +208,10 @@
       <parameter>default</parameter>
     </parameter>
     <parameter key="nelmio_api_doc.use_validation_groups">false</parameter>
+    <parameter key="twig.form.resources" type="collection">
+      <parameter>form_div_layout.html.twig</parameter>
+    </parameter>
+    <parameter key="twig.default_path">/var/www/EwanAPI/templates</parameter>
     <parameter key="console.command.ids" type="collection"/>
   </parameters>
   <services>
@@ -367,7 +378,7 @@
     </service>
     <service id="argument_resolver.service" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\ServiceValueResolver">
       <tag priority="-50" name="Symfony\Component\HttpKernel\Controller\ArgumentResolver\ServiceValueResolver">controller.argument_value_resolver</tag>
-      <argument type="service" id=".service_locator.cFIbj78"/>
+      <argument type="service" id=".service_locator.tNsIPfq"/>
     </service>
     <service id="argument_resolver.default" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\DefaultValueResolver">
       <tag priority="-100" name="Symfony\Component\HttpKernel\Controller\ArgumentResolver\DefaultValueResolver">controller.argument_value_resolver</tag>
@@ -1226,6 +1237,51 @@
         <argument key="cache.security_is_granted_attribute_expression_language" type="service" id="cache.security_is_granted_attribute_expression_language" on-invalid="ignore_uninitialized"/>
       </argument>
     </service>
+    <service id="assets.packages" class="Symfony\Component\Asset\Packages">
+      <argument type="service" id="assets._default_package"/>
+      <argument type="tagged_iterator" tag="assets.package" index-by="package" default-index-method="getDefaultPackageName" default-priority-method="getDefaultPackagePriority"/>
+    </service>
+    <service id="assets.empty_package" class="Symfony\Component\Asset\Package">
+      <argument type="service" id="assets.empty_version_strategy"/>
+    </service>
+    <service id="assets.context" class="Symfony\Component\Asset\Context\RequestStackContext">
+      <argument type="service" id="request_stack"/>
+      <argument type="service">
+        <service class="string">
+          <factory service="router.request_context" method="getBaseUrl"/>
+        </service>
+      </argument>
+      <argument type="service">
+        <service class="bool">
+          <factory service="router.request_context" method="isSecure"/>
+        </service>
+      </argument>
+    </service>
+    <service id="assets.path_package" class="Symfony\Component\Asset\PathPackage" abstract="true">
+      <argument type="abstract">base path</argument>
+      <argument type="abstract">version strategy</argument>
+      <argument type="service" id="assets.context"/>
+    </service>
+    <service id="assets.url_package" class="Symfony\Component\Asset\UrlPackage" abstract="true">
+      <argument type="abstract">base URLs</argument>
+      <argument type="abstract">version strategy</argument>
+      <argument type="service" id="assets.context"/>
+    </service>
+    <service id="assets.static_version_strategy" class="Symfony\Component\Asset\VersionStrategy\StaticVersionStrategy" abstract="true">
+      <argument type="abstract">version</argument>
+      <argument type="abstract">format</argument>
+    </service>
+    <service id="assets.empty_version_strategy" class="Symfony\Component\Asset\VersionStrategy\EmptyVersionStrategy"/>
+    <service id="assets.json_manifest_version_strategy" class="Symfony\Component\Asset\VersionStrategy\JsonManifestVersionStrategy" abstract="true">
+      <argument type="abstract">manifest path</argument>
+      <argument type="service" id="http_client" on-invalid="null"/>
+      <argument>false</argument>
+    </service>
+    <service id="assets._default_package" class="Symfony\Component\Asset\PathPackage">
+      <argument></argument>
+      <argument type="service" id="assets.empty_version_strategy"/>
+      <argument type="service" id="assets.context"/>
+    </service>
     <service id="debug.error_handler_configurator" class="Symfony\Component\HttpKernel\Debug\ErrorHandlerConfigurator" public="true">
       <tag name="monolog.logger" channel="php"/>
       <argument type="service" id="logger" on-invalid="null"/>
@@ -1547,6 +1603,14 @@
         <argument>0</argument>
       </call>
       <call method="addListener">
+        <argument>kernel.view</argument>
+        <argument type="collection">
+          <argument type="service_closure" id="controller.template_attribute_listener"/>
+          <argument>onKernelView</argument>
+        </argument>
+        <argument>-128</argument>
+      </call>
+      <call method="addListener">
         <argument>Symfony\Component\Security\Http\Event\CheckPassportEvent</argument>
         <argument type="collection">
           <argument type="service_closure" id="security.listener.csrf_protection"/>
@@ -1576,7 +1640,7 @@
     </service>
     <service id="argument_resolver.not_tagged_controller" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\NotTaggedControllerValueResolver">
       <tag name="controller.argument_value_resolver" priority="-200"/>
-      <argument type="service" id=".service_locator.cFIbj78"/>
+      <argument type="service" id=".service_locator.tNsIPfq"/>
     </service>
     <service id="routing.resolver" class="Symfony\Component\Config\Loader\LoaderResolver">
       <call method="addLoader">
@@ -1726,7 +1790,7 @@
       </argument>
     </service>
     <service id="Symfony\Bundle\FrameworkBundle\Controller\TemplateController" class="Symfony\Bundle\FrameworkBundle\Controller\TemplateController" public="true">
-      <argument>null</argument>
+      <argument type="service" id="twig" on-invalid="ignore"/>
     </service>
     <service id="property_accessor" class="Symfony\Component\PropertyAccess\PropertyAccessor">
       <argument>3</argument>
@@ -1890,7 +1954,7 @@
           <factory class="Symfony\Component\ErrorHandler\ErrorRenderer\SerializerErrorRenderer" method="getPreferredFormat"/>
         </service>
       </argument>
-      <argument type="service" id="error_handler.error_renderer.html"/>
+      <argument type="service" id="twig.error_renderer.html"/>
       <argument type="service">
         <service>
           <argument type="service" id="request_stack"/>
@@ -2032,6 +2096,9 @@
     <service id="twig.runtime.security_csrf" class="Symfony\Bridge\Twig\Extension\CsrfRuntime">
       <tag name="twig.runtime"/>
       <argument type="service" id="security.csrf.token_manager"/>
+    </service>
+    <service id="twig.extension.security_csrf" class="Symfony\Bridge\Twig\Extension\CsrfExtension">
+      <tag name="twig.extension"/>
     </service>
     <service id="validator" class="Symfony\Component\Validator\Validator\ValidatorInterface">
       <factory service="validator.builder" method="getValidator"/>
@@ -2369,7 +2436,7 @@
       <argument type="service" id="maker.autoloader_util"/>
       <argument type="service" id="maker.file_link_formatter"/>
       <argument>/var/www/EwanAPI</argument>
-      <argument>null</argument>
+      <argument>/var/www/EwanAPI/templates</argument>
     </service>
     <service id="maker.autoloader_finder" class="Symfony\Bundle\MakerBundle\Util\ComposerAutoloaderFinder">
       <argument>App</argument>
@@ -3696,6 +3763,15 @@
       <argument>ES512</argument>
       <factory class="Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\SignatureAlgorithmFactory" method="create"/>
     </service>
+    <service id="twig.extension.logout_url" class="Symfony\Bridge\Twig\Extension\LogoutUrlExtension">
+      <tag name="twig.extension"/>
+      <argument type="service" id="security.logout_url_generator"/>
+    </service>
+    <service id="twig.extension.security" class="Symfony\Bridge\Twig\Extension\SecurityExtension">
+      <tag name="twig.extension"/>
+      <argument type="service" id="security.authorization_checker" on-invalid="ignore"/>
+      <argument type="service" id="security.impersonate_url_generator" on-invalid="ignore"/>
+    </service>
     <service id="data_collector.security" class="Symfony\Bundle\SecurityBundle\DataCollector\SecurityDataCollector">
       <tag name="data_collector" template="@Security/Collector/security.html.twig" id="security" priority="270"/>
       <argument type="service" id="security.untracked_token_storage"/>
@@ -4211,6 +4287,9 @@
         <argument>nelmio:apidoc:dump</argument>
       </call>
     </service>
+    <service id="nelmio_api_doc.controller.swagger_ui" class="Nelmio\ApiDocBundle\Controller\SwaggerUiController" public="true">
+      <argument type="service" id="nelmio_api_doc.render_docs"/>
+    </service>
     <service id="nelmio_api_doc.controller.swagger_json" class="Nelmio\ApiDocBundle\Controller\DocumentationController" public="true">
       <argument type="service" id="nelmio_api_doc.render_docs"/>
     </service>
@@ -4221,7 +4300,14 @@
       <argument type="service" id="nelmio_api_doc.generator_locator"/>
       <argument type="service" id="nelmio_api_doc.render_docs.json"/>
       <argument type="service" id="nelmio_api_doc.render_docs.yaml"/>
-      <argument>null</argument>
+      <argument type="service" id="nelmio_api_doc.render_docs.html" on-invalid="ignore"/>
+    </service>
+    <service id="nelmio_api_doc.render_docs.html" class="Nelmio\ApiDocBundle\Render\Html\HtmlOpenApiRenderer">
+      <argument type="service" id="twig"/>
+    </service>
+    <service id="nelmio_api_doc.render_docs.html.asset" class="Nelmio\ApiDocBundle\Render\Html\GetNelmioAsset">
+      <tag name="twig.extension"/>
+      <argument type="service" id="twig.extension.assets"/>
     </service>
     <service id="nelmio_api_doc.render_docs.json" class="Nelmio\ApiDocBundle\Render\Json\JsonOpenApiRenderer"/>
     <service id="nelmio_api_doc.render_docs.yaml" class="Nelmio\ApiDocBundle\Render\Yaml\YamlOpenApiRenderer"/>
@@ -4233,8 +4319,8 @@
       <tag name="nelmio_api_doc.describer.default" priority="1000"/>
       <argument type="collection">
         <argument key="info" type="collection">
-          <argument key="title">Atelier du Bien etre</argument>
-          <argument key="description">l'API du site</argument>
+          <argument key="title">Ewan on the floor</argument>
+          <argument key="description">a laide</argument>
           <argument key="version">2.0.0</argument>
         </argument>
         <argument key="paths" type="collection">
@@ -4286,7 +4372,7 @@
               <argument key="properties" type="collection">
                 <argument key="username" type="collection">
                   <argument key="type">string</argument>
-                  <argument key="default">public</argument>
+                  <argument key="default">public@public</argument>
                 </argument>
                 <argument key="password" type="collection">
                   <argument key="type">string</argument>
@@ -4296,11 +4382,16 @@
             </argument>
           </argument>
           <argument key="securitySchemes" type="collection">
-            <argument key="bearerAuth" type="collection">
-              <argument key="type">apiKey</argument>
-              <argument key="in">header</argument>
-              <argument key="name">Authorization</argument>
+            <argument key="Bearer" type="collection">
+              <argument key="type">http</argument>
+              <argument key="scheme">bearer</argument>
+              <argument key="bearerFormat">JWT</argument>
             </argument>
+          </argument>
+        </argument>
+        <argument key="security" type="collection">
+          <argument type="collection">
+            <argument key="Bearer" type="collection"/>
           </argument>
         </argument>
       </argument>
@@ -4475,6 +4566,270 @@
     </service>
     <service id="nelmio_api_doc.route_argument_describer.map_query_parameter" class="Nelmio\ApiDocBundle\RouteDescriber\RouteArgumentDescriber\SymfonyMapQueryParameterDescriber">
       <tag name="nelmio_api_doc.route_argument_describer" priority="0"/>
+    </service>
+    <service id="twig" class="Twig\Environment">
+      <tag name="container.preload" class="Twig\Cache\FilesystemCache"/>
+      <tag name="container.preload" class="Twig\Extension\CoreExtension"/>
+      <tag name="container.preload" class="Twig\Extension\EscaperExtension"/>
+      <tag name="container.preload" class="Twig\Extension\OptimizerExtension"/>
+      <tag name="container.preload" class="Twig\Extension\StagingExtension"/>
+      <tag name="container.preload" class="Twig\ExtensionSet"/>
+      <tag name="container.preload" class="Twig\Template"/>
+      <tag name="container.preload" class="Twig\TemplateWrapper"/>
+      <argument type="service" id="twig.loader.native_filesystem"/>
+      <argument type="collection">
+        <argument key="autoescape">name</argument>
+        <argument key="cache">/var/www/EwanAPI/var/cache/dev/twig</argument>
+        <argument key="charset">UTF-8</argument>
+        <argument key="debug">true</argument>
+        <argument key="strict_variables">true</argument>
+      </argument>
+      <call method="addExtension">
+        <argument type="service" id="twig.extension.security_csrf"/>
+      </call>
+      <call method="addExtension">
+        <argument type="service" id="twig.extension.logout_url"/>
+      </call>
+      <call method="addExtension">
+        <argument type="service" id="twig.extension.security"/>
+      </call>
+      <call method="addExtension">
+        <argument type="service" id="twig.extension.profiler"/>
+      </call>
+      <call method="addExtension">
+        <argument type="service" id="twig.extension.trans"/>
+      </call>
+      <call method="addExtension">
+        <argument type="service" id="twig.extension.assets"/>
+      </call>
+      <call method="addExtension">
+        <argument type="service" id="twig.extension.code"/>
+      </call>
+      <call method="addExtension">
+        <argument type="service" id="twig.extension.routing"/>
+      </call>
+      <call method="addExtension">
+        <argument type="service" id="twig.extension.yaml"/>
+      </call>
+      <call method="addExtension">
+        <argument type="service" id="twig.extension.debug.stopwatch"/>
+      </call>
+      <call method="addExtension">
+        <argument type="service" id="twig.extension.httpkernel"/>
+      </call>
+      <call method="addExtension">
+        <argument type="service" id="twig.extension.httpfoundation"/>
+      </call>
+      <call method="addExtension">
+        <argument type="service" id="twig.extension.serializer"/>
+      </call>
+      <call method="addExtension">
+        <argument type="service" id="doctrine.twig.doctrine_extension"/>
+      </call>
+      <call method="addExtension">
+        <argument type="service" id="nelmio_api_doc.render_docs.html.asset"/>
+      </call>
+      <call method="addExtension">
+        <argument type="service" id="twig.extension.debug"/>
+      </call>
+      <call method="addGlobal">
+        <argument>app</argument>
+        <argument type="service" id="twig.app_variable"/>
+      </call>
+      <call method="addRuntimeLoader">
+        <argument type="service" id="twig.runtime_loader"/>
+      </call>
+      <configurator service="twig.configurator.environment" method="configure"/>
+    </service>
+    <service id="twig.app_variable" class="Symfony\Bridge\Twig\AppVariable">
+      <call method="setEnvironment">
+        <argument>dev</argument>
+      </call>
+      <call method="setDebug">
+        <argument>true</argument>
+      </call>
+      <call method="setTokenStorage">
+        <argument type="service" id="security.token_storage" on-invalid="ignore"/>
+      </call>
+      <call method="setRequestStack">
+        <argument type="service" id="request_stack" on-invalid="ignore"/>
+      </call>
+      <call method="setEnabledLocales">
+        <argument type="collection"/>
+      </call>
+    </service>
+    <service id="twig.template_iterator" class="Symfony\Bundle\TwigBundle\TemplateIterator">
+      <argument type="service" id="kernel"/>
+      <argument type="collection"/>
+      <argument>/var/www/EwanAPI/templates</argument>
+      <argument type="collection"/>
+    </service>
+    <service id="twig.template_cache_warmer" class="Symfony\Bundle\TwigBundle\CacheWarmer\TemplateCacheWarmer">
+      <tag name="kernel.cache_warmer"/>
+      <tag name="container.service_subscriber" id="twig"/>
+      <argument type="service" id=".service_locator.etVElvN.twig.template_cache_warmer"/>
+      <argument type="service" id="twig.template_iterator"/>
+    </service>
+    <service id="twig.loader.native_filesystem" class="Twig\Loader\FilesystemLoader">
+      <tag name="twig.loader"/>
+      <argument type="collection"/>
+      <argument>/var/www/EwanAPI</argument>
+      <call method="addPath">
+        <argument>/var/www/EwanAPI/vendor/doctrine/doctrine-bundle/Resources/views</argument>
+        <argument>Doctrine</argument>
+      </call>
+      <call method="addPath">
+        <argument>/var/www/EwanAPI/vendor/doctrine/doctrine-bundle/Resources/views</argument>
+        <argument>!Doctrine</argument>
+      </call>
+      <call method="addPath">
+        <argument>/var/www/EwanAPI/vendor/doctrine/doctrine-migrations-bundle/Resources/views</argument>
+        <argument>DoctrineMigrations</argument>
+      </call>
+      <call method="addPath">
+        <argument>/var/www/EwanAPI/vendor/doctrine/doctrine-migrations-bundle/Resources/views</argument>
+        <argument>!DoctrineMigrations</argument>
+      </call>
+      <call method="addPath">
+        <argument>/var/www/EwanAPI/vendor/symfony/security-bundle/Resources/views</argument>
+        <argument>Security</argument>
+      </call>
+      <call method="addPath">
+        <argument>/var/www/EwanAPI/vendor/symfony/security-bundle/Resources/views</argument>
+        <argument>!Security</argument>
+      </call>
+      <call method="addPath">
+        <argument>/var/www/EwanAPI/vendor/nelmio/api-doc-bundle/Resources/views</argument>
+        <argument>NelmioApiDoc</argument>
+      </call>
+      <call method="addPath">
+        <argument>/var/www/EwanAPI/vendor/nelmio/api-doc-bundle/Resources/views</argument>
+        <argument>!NelmioApiDoc</argument>
+      </call>
+      <call method="addPath">
+        <argument>/var/www/EwanAPI/templates</argument>
+      </call>
+    </service>
+    <service id="twig.loader.chain" class="Twig\Loader\ChainLoader"/>
+    <service id="twig.extension.profiler" class="Symfony\Bridge\Twig\Extension\ProfilerExtension">
+      <tag name="twig.extension"/>
+      <argument type="service" id="twig.profile"/>
+      <argument type="service" id="debug.stopwatch" on-invalid="ignore"/>
+    </service>
+    <service id="twig.profile" class="Twig\Profiler\Profile"/>
+    <service id="data_collector.twig" class="Symfony\Bridge\Twig\DataCollector\TwigDataCollector">
+      <tag name="data_collector" template="@WebProfiler/Collector/twig.html.twig" id="twig" priority="257"/>
+      <argument type="service" id="twig.profile"/>
+      <argument type="service" id="twig"/>
+    </service>
+    <service id="twig.extension.trans" class="Symfony\Bridge\Twig\Extension\TranslationExtension">
+      <tag name="twig.extension"/>
+      <argument>null</argument>
+    </service>
+    <service id="twig.extension.assets" class="Symfony\Bridge\Twig\Extension\AssetExtension">
+      <tag name="twig.extension"/>
+      <argument type="service" id="assets.packages"/>
+    </service>
+    <service id="twig.extension.code" class="Symfony\Bridge\Twig\Extension\CodeExtension">
+      <tag name="twig.extension"/>
+      <argument type="service" id="debug.file_link_formatter" on-invalid="ignore"/>
+      <argument>/var/www/EwanAPI</argument>
+      <argument>UTF-8</argument>
+    </service>
+    <service id="twig.extension.routing" class="Symfony\Bridge\Twig\Extension\RoutingExtension">
+      <tag name="twig.extension"/>
+      <argument type="service" id="router.default"/>
+    </service>
+    <service id="twig.extension.yaml" class="Symfony\Bridge\Twig\Extension\YamlExtension">
+      <tag name="twig.extension"/>
+    </service>
+    <service id="twig.extension.debug.stopwatch" class="Symfony\Bridge\Twig\Extension\StopwatchExtension">
+      <tag name="twig.extension"/>
+      <argument type="service" id="debug.stopwatch" on-invalid="ignore"/>
+      <argument>true</argument>
+    </service>
+    <service id="twig.extension.htmlsanitizer" class="Symfony\Bridge\Twig\Extension\HtmlSanitizerExtension">
+      <argument type="service" id=".service_locator.Xbsa8iG"/>
+    </service>
+    <service id="twig.extension.httpkernel" class="Symfony\Bridge\Twig\Extension\HttpKernelExtension">
+      <tag name="twig.extension"/>
+    </service>
+    <service id="twig.runtime.httpkernel" class="Symfony\Bridge\Twig\Extension\HttpKernelRuntime">
+      <tag name="twig.runtime"/>
+      <argument type="service" id="fragment.handler"/>
+      <argument type="service" id="fragment.uri_generator" on-invalid="ignore"/>
+    </service>
+    <service id="twig.extension.httpfoundation" class="Symfony\Bridge\Twig\Extension\HttpFoundationExtension">
+      <tag name="twig.extension"/>
+      <argument type="service" id="url_helper"/>
+    </service>
+    <service id="twig.extension.debug" class="Twig\Extension\DebugExtension">
+      <tag name="twig.extension"/>
+    </service>
+    <service id="twig.extension.weblink" class="Symfony\Bridge\Twig\Extension\WebLinkExtension">
+      <argument type="service" id="request_stack"/>
+    </service>
+    <service id="twig.configurator.environment" class="Symfony\Bundle\TwigBundle\DependencyInjection\Configurator\EnvironmentConfigurator">
+      <argument>F j, Y H:i</argument>
+      <argument>%d days</argument>
+      <argument>null</argument>
+      <argument>0</argument>
+      <argument>.</argument>
+      <argument>,</argument>
+    </service>
+    <service id="twig.runtime_loader" class="Twig\RuntimeLoader\ContainerRuntimeLoader">
+      <argument type="service" id=".service_locator.VMK2iOS"/>
+    </service>
+    <service id="twig.error_renderer.html" class="Symfony\Bridge\Twig\ErrorRenderer\TwigErrorRenderer">
+      <argument type="service" id="twig"/>
+      <argument type="service" id="error_handler.error_renderer.html"/>
+      <argument type="service">
+        <service class="bool">
+          <argument type="service" id="request_stack"/>
+          <argument>true</argument>
+          <factory class="Symfony\Bridge\Twig\ErrorRenderer\TwigErrorRenderer" method="isDebug"/>
+        </service>
+      </argument>
+    </service>
+    <service id="twig.runtime.serializer" class="Symfony\Bridge\Twig\Extension\SerializerRuntime">
+      <tag name="twig.runtime"/>
+      <argument type="service" id="serializer"/>
+    </service>
+    <service id="twig.extension.serializer" class="Symfony\Bridge\Twig\Extension\SerializerExtension">
+      <tag name="twig.extension"/>
+    </service>
+    <service id="controller.template_attribute_listener" class="Symfony\Bridge\Twig\EventListener\TemplateAttributeListener">
+      <tag name="kernel.event_subscriber"/>
+      <argument type="service" id="twig"/>
+    </service>
+    <service id="twig.command.debug" class="Symfony\Bridge\Twig\Command\DebugCommand">
+      <tag name="console.command"/>
+      <tag name="container.no_preload"/>
+      <argument type="service" id="twig"/>
+      <argument>/var/www/EwanAPI</argument>
+      <argument>%kernel.bundles_metadata%</argument>
+      <argument>/var/www/EwanAPI/templates</argument>
+      <argument type="service" id="debug.file_link_formatter" on-invalid="null"/>
+      <call method="setName">
+        <argument>debug:twig</argument>
+      </call>
+      <call method="setDescription">
+        <argument>Show a list of twig functions, filters, globals and tests</argument>
+      </call>
+    </service>
+    <service id="twig.command.lint" class="Symfony\Bundle\TwigBundle\Command\LintCommand">
+      <tag name="console.command"/>
+      <tag name="container.no_preload"/>
+      <argument type="service" id="twig"/>
+      <argument type="collection">
+        <argument>*.twig</argument>
+      </argument>
+      <call method="setName">
+        <argument>lint:twig</argument>
+      </call>
+      <call method="setDescription">
+        <argument>Lint a Twig template and outputs encountered errors</argument>
+      </call>
     </service>
     <service id=".instanceof.Symfony\Contracts\Service\ServiceSubscriberInterface.0.App\Controller\AutreController" class="App\Controller\AutreController" autowire="true" abstract="true"/>
     <service id=".instanceof.Symfony\Bundle\FrameworkBundle\Controller\AbstractController.0.App\Controller\AutreController" class="App\Controller\AutreController" autowire="true" abstract="true"/>
@@ -4992,6 +5347,13 @@
         <argument key="entityManager" type="service_closure" id="doctrine.orm.default_entity_manager"/>
       </argument>
     </service>
+    <service id=".service_locator.Wh7x.hE" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator"/>
+      <argument type="collection">
+        <argument key="repositoryMV" type="service_closure" id="App\Repository\DowloadFileRepository"/>
+        <argument key="serializer" type="service_closure" id="serializer"/>
+      </argument>
+    </service>
     <service id=".service_locator.eJmiWeB" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
@@ -5074,48 +5436,19 @@
         <argument key="serializer" type="service_closure" id="serializer"/>
       </argument>
     </service>
-    <service id=".errored.o1ioMxM" class="JMS\Serializer\SerializerInterface">
-      <tag name="container.error" message="Cannot determine controller argument for &quot;App\Controller\MonController::GetAllModele()&quot;: the $serializer argument is type-hinted with the non-existent class or interface: &quot;JMS\Serializer\SerializerInterface&quot;."/>
-    </service>
-    <service id=".service_locator.rKvDkjF" class="Symfony\Component\DependencyInjection\ServiceLocator">
-      <tag name="container.service_locator"/>
-      <argument type="collection">
-        <argument key="cache" type="service_closure" id="cache.app.taggable"/>
-        <argument key="repository" type="service_closure" id="App\Repository\ModeleTestRepository"/>
-        <argument key="serializer" type="service_closure" id=".errored.o1ioMxM"/>
-      </argument>
-    </service>
-    <service id=".errored.8ZelIpg" class="JMS\Serializer\SerializerInterface">
-      <tag name="container.error" message="Cannot determine controller argument for &quot;App\Controller\MonController::GetModeleUnique()&quot;: the $serializer argument is type-hinted with the non-existent class or interface: &quot;JMS\Serializer\SerializerInterface&quot;."/>
-    </service>
-    <service id=".service_locator.pwDx5_J" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator.W4ACqPd" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
         <argument key="repository" type="service_closure" id="App\Repository\ModeleTestRepository"/>
-        <argument key="serializer" type="service_closure" id=".errored.8ZelIpg"/>
+        <argument key="serializer" type="service_closure" id="serializer"/>
       </argument>
     </service>
-    <service id=".errored.VkI5yfj" class="JMS\Serializer\SerializerInterface">
-      <tag name="container.error" message="Cannot determine controller argument for &quot;App\Controller\MonController::creatModelsTest()&quot;: the $serializer argument is type-hinted with the non-existent class or interface: &quot;JMS\Serializer\SerializerInterface&quot;."/>
-    </service>
-    <service id=".service_locator.uS58GVi" class="Symfony\Component\DependencyInjection\ServiceLocator">
-      <tag name="container.service_locator"/>
-      <argument type="collection">
-        <argument key="entityManager" type="service_closure" id="doctrine.orm.default_entity_manager"/>
-        <argument key="interfaceUrl" type="service_closure" id="router.default"/>
-        <argument key="repository" type="service_closure" id="App\Repository\ModeleTestRepository"/>
-        <argument key="serializer" type="service_closure" id=".errored.VkI5yfj"/>
-      </argument>
-    </service>
-    <service id=".errored.bDDDXnm" class="JMS\Serializer\SerializerInterface">
-      <tag name="container.error" message="Cannot determine controller argument for &quot;App\Controller\MonController::updateModeleUnique()&quot;: the $serializer argument is type-hinted with the non-existent class or interface: &quot;JMS\Serializer\SerializerInterface&quot;."/>
-    </service>
-    <service id=".service_locator.gbncVNf" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator.vkx0CD5" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
         <argument key="entityManager" type="service_closure" id="doctrine.orm.default_entity_manager"/>
         <argument key="repository" type="service_closure" id="App\Repository\ModeleTestRepository"/>
-        <argument key="serializer" type="service_closure" id=".errored.bDDDXnm"/>
+        <argument key="serializer" type="service_closure" id="serializer"/>
         <argument key="validator" type="service_closure" id="validator"/>
       </argument>
     </service>
@@ -5148,6 +5481,14 @@
         <argument key="entityManager" type="service_closure" id="doctrine.orm.default_entity_manager"/>
         <argument key="repositoryP" type="service_closure" id="App\Repository\PieceRepository"/>
         <argument key="repositoryTP" type="service_closure" id="App\Repository\TypePieceRepository"/>
+        <argument key="serializer" type="service_closure" id="serializer"/>
+      </argument>
+    </service>
+    <service id=".service_locator.qSf3P1l" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator"/>
+      <argument type="collection">
+        <argument key="entityManager" type="service_closure" id="doctrine.orm.default_entity_manager"/>
+        <argument key="interfaceUrl" type="service_closure" id="router.default"/>
         <argument key="serializer" type="service_closure" id="serializer"/>
       </argument>
     </service>
@@ -5204,7 +5545,7 @@
         <argument key="serializer" type="service_closure" id="serializer"/>
       </argument>
     </service>
-    <service id=".service_locator.cFIbj78" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator.tNsIPfq" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
         <argument key="App\Controller\AutreController::GetAllType" type="service_closure" id=".service_locator.BkN6Win"/>
@@ -5221,6 +5562,7 @@
         <argument key="App\Controller\ContratPieceController::delete" type="service_closure" id=".service_locator.CsMkqUa"/>
         <argument key="App\Controller\ContratPieceController::getAll" type="service_closure" id=".service_locator.CsMkqUa"/>
         <argument key="App\Controller\ContratPieceController::getOne" type="service_closure" id=".service_locator.CsMkqUa"/>
+        <argument key="App\Controller\DowloadFilesController::GetAllImage" type="service_closure" id=".service_locator.Wh7x.hE"/>
         <argument key="App\Controller\DowloadFilesController::createFile" type="service_closure" id=".service_locator.eJmiWeB"/>
         <argument key="App\Controller\MarqueVehiculeController::GetAllMarque" type="service_closure" id=".service_locator.FoeC1S9"/>
         <argument key="App\Controller\MarqueVehiculeController::GetUneMarqueVehicule" type="service_closure" id=".service_locator.FoeC1S9"/>
@@ -5233,19 +5575,18 @@
         <argument key="App\Controller\ModeleVehiculeController::createModeleVehicule" type="service_closure" id=".service_locator.dpqHdnm"/>
         <argument key="App\Controller\ModeleVehiculeController::deleteModeleVehicule" type="service_closure" id=".service_locator.pFr8VsZ"/>
         <argument key="App\Controller\ModeleVehiculeController::updatePiece" type="service_closure" id=".service_locator.N5P0Wj7"/>
-        <argument key="App\Controller\MonController::GetAllModele" type="service_closure" id=".service_locator.rKvDkjF"/>
-        <argument key="App\Controller\MonController::GetModeleUnique" type="service_closure" id=".service_locator.pwDx5_J"/>
-        <argument key="App\Controller\MonController::creatModelsTest" type="service_closure" id=".service_locator.uS58GVi"/>
+        <argument key="App\Controller\MonController::GetModeleUnique" type="service_closure" id=".service_locator.W4ACqPd"/>
+        <argument key="App\Controller\MonController::creatModelsTest" type="service_closure" id=".service_locator.kw2KoEC"/>
         <argument key="App\Controller\MonController::deleteModeleUnique" type="service_closure" id=".service_locator.j9NudlR"/>
-        <argument key="App\Controller\MonController::updateModeleUnique" type="service_closure" id=".service_locator.gbncVNf"/>
+        <argument key="App\Controller\MonController::updateModeleUnique" type="service_closure" id=".service_locator.vkx0CD5"/>
         <argument key="App\Controller\PieceController::GetAllPiece" type="service_closure" id=".service_locator.eCRFt3Y"/>
         <argument key="App\Controller\PieceController::GetPiece" type="service_closure" id=".service_locator.eCRFt3Y"/>
         <argument key="App\Controller\PieceController::createPiece" type="service_closure" id=".service_locator.HSrsule"/>
         <argument key="App\Controller\PieceController::deletePiece" type="service_closure" id=".service_locator.fp3a.JX"/>
         <argument key="App\Controller\PieceController::updatePiece" type="service_closure" id=".service_locator.1mmku44"/>
-        <argument key="App\Controller\PieceModeleController::create" type="service_closure" id=".service_locator.CsMkqUa"/>
+        <argument key="App\Controller\PieceModeleController::createPieceModel" type="service_closure" id=".service_locator.CsMkqUa"/>
         <argument key="App\Controller\PieceModeleController::delete" type="service_closure" id=".service_locator.CsMkqUa"/>
-        <argument key="App\Controller\PieceModeleController::getAll" type="service_closure" id=".service_locator.CsMkqUa"/>
+        <argument key="App\Controller\PieceModeleController::getAll" type="service_closure" id=".service_locator.qSf3P1l"/>
         <argument key="App\Controller\PieceModeleController::getOne" type="service_closure" id=".service_locator.CsMkqUa"/>
         <argument key="App\Controller\TypePieceController::GetAllTypePiece" type="service_closure" id=".service_locator.F_8iQf8"/>
         <argument key="App\Controller\TypePieceController::GetUneTypePiece" type="service_closure" id=".service_locator.F_8iQf8"/>
@@ -5275,6 +5616,7 @@
         <argument key="App\Controller\ContratPieceController:delete" type="service_closure" id=".service_locator.CsMkqUa"/>
         <argument key="App\Controller\ContratPieceController:getAll" type="service_closure" id=".service_locator.CsMkqUa"/>
         <argument key="App\Controller\ContratPieceController:getOne" type="service_closure" id=".service_locator.CsMkqUa"/>
+        <argument key="App\Controller\DowloadFilesController:GetAllImage" type="service_closure" id=".service_locator.Wh7x.hE"/>
         <argument key="App\Controller\DowloadFilesController:createFile" type="service_closure" id=".service_locator.eJmiWeB"/>
         <argument key="App\Controller\MarqueVehiculeController:GetAllMarque" type="service_closure" id=".service_locator.FoeC1S9"/>
         <argument key="App\Controller\MarqueVehiculeController:GetUneMarqueVehicule" type="service_closure" id=".service_locator.FoeC1S9"/>
@@ -5287,19 +5629,18 @@
         <argument key="App\Controller\ModeleVehiculeController:createModeleVehicule" type="service_closure" id=".service_locator.dpqHdnm"/>
         <argument key="App\Controller\ModeleVehiculeController:deleteModeleVehicule" type="service_closure" id=".service_locator.pFr8VsZ"/>
         <argument key="App\Controller\ModeleVehiculeController:updatePiece" type="service_closure" id=".service_locator.N5P0Wj7"/>
-        <argument key="App\Controller\MonController:GetAllModele" type="service_closure" id=".service_locator.rKvDkjF"/>
-        <argument key="App\Controller\MonController:GetModeleUnique" type="service_closure" id=".service_locator.pwDx5_J"/>
-        <argument key="App\Controller\MonController:creatModelsTest" type="service_closure" id=".service_locator.uS58GVi"/>
+        <argument key="App\Controller\MonController:GetModeleUnique" type="service_closure" id=".service_locator.W4ACqPd"/>
+        <argument key="App\Controller\MonController:creatModelsTest" type="service_closure" id=".service_locator.kw2KoEC"/>
         <argument key="App\Controller\MonController:deleteModeleUnique" type="service_closure" id=".service_locator.j9NudlR"/>
-        <argument key="App\Controller\MonController:updateModeleUnique" type="service_closure" id=".service_locator.gbncVNf"/>
+        <argument key="App\Controller\MonController:updateModeleUnique" type="service_closure" id=".service_locator.vkx0CD5"/>
         <argument key="App\Controller\PieceController:GetAllPiece" type="service_closure" id=".service_locator.eCRFt3Y"/>
         <argument key="App\Controller\PieceController:GetPiece" type="service_closure" id=".service_locator.eCRFt3Y"/>
         <argument key="App\Controller\PieceController:createPiece" type="service_closure" id=".service_locator.HSrsule"/>
         <argument key="App\Controller\PieceController:deletePiece" type="service_closure" id=".service_locator.fp3a.JX"/>
         <argument key="App\Controller\PieceController:updatePiece" type="service_closure" id=".service_locator.1mmku44"/>
-        <argument key="App\Controller\PieceModeleController:create" type="service_closure" id=".service_locator.CsMkqUa"/>
+        <argument key="App\Controller\PieceModeleController:createPieceModel" type="service_closure" id=".service_locator.CsMkqUa"/>
         <argument key="App\Controller\PieceModeleController:delete" type="service_closure" id=".service_locator.CsMkqUa"/>
-        <argument key="App\Controller\PieceModeleController:getAll" type="service_closure" id=".service_locator.CsMkqUa"/>
+        <argument key="App\Controller\PieceModeleController:getAll" type="service_closure" id=".service_locator.qSf3P1l"/>
         <argument key="App\Controller\PieceModeleController:getOne" type="service_closure" id=".service_locator.CsMkqUa"/>
         <argument key="App\Controller\TypePieceController:GetAllTypePiece" type="service_closure" id=".service_locator.F_8iQf8"/>
         <argument key="App\Controller\TypePieceController:GetUneTypePiece" type="service_closure" id=".service_locator.F_8iQf8"/>
@@ -5602,6 +5943,7 @@
         <argument key="security.csrf.token_manager" type="service_closure" id="security.csrf.token_manager" on-invalid="ignore"/>
         <argument key="security.token_storage" type="service_closure" id="security.token_storage" on-invalid="ignore"/>
         <argument key="serializer" type="service_closure" id="serializer" on-invalid="ignore"/>
+        <argument key="twig" type="service_closure" id="twig" on-invalid="ignore"/>
       </argument>
     </service>
     <service id=".service_locator.O2p6Lk7.App\Controller\AutreController" class="Symfony\Component\DependencyInjection\ServiceLocator">
@@ -5693,6 +6035,18 @@
       <argument>router.cache_warmer</argument>
       <argument type="service" id="service_container"/>
       <factory service=".service_locator.cUcW89y" method="withContext"/>
+    </service>
+    <service id=".service_locator.etVElvN" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator"/>
+      <argument type="collection">
+        <argument key="twig" type="service_closure" id="twig"/>
+      </argument>
+    </service>
+    <service id=".service_locator.etVElvN.twig.template_cache_warmer" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator_context" id="twig.template_cache_warmer"/>
+      <argument>twig.template_cache_warmer</argument>
+      <argument type="service" id="service_container"/>
+      <factory service=".service_locator.etVElvN" method="withContext"/>
     </service>
     <service id=".service_locator.oR77BOj" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
@@ -6159,6 +6513,20 @@
       <argument>false</argument>
       <argument type="service_closure" id="lexik_jwt_authentication.generate_keypair_command"/>
     </service>
+    <service id=".twig.command.debug.lazy" class="Symfony\Component\Console\Command\LazyCommand">
+      <argument>debug:twig</argument>
+      <argument type="collection"/>
+      <argument>Show a list of twig functions, filters, globals and tests</argument>
+      <argument>false</argument>
+      <argument type="service_closure" id="twig.command.debug"/>
+    </service>
+    <service id=".twig.command.lint.lazy" class="Symfony\Component\Console\Command\LazyCommand">
+      <argument>lint:twig</argument>
+      <argument type="collection"/>
+      <argument>Lint a Twig template and outputs encountered errors</argument>
+      <argument>false</argument>
+      <argument type="service_closure" id="twig.command.lint"/>
+    </service>
     <service id=".maker.auto_command.make_auth.lazy" class="Symfony\Component\Console\Command\LazyCommand">
       <argument>make:auth</argument>
       <argument type="collection"/>
@@ -6334,7 +6702,7 @@
     </service>
     <service id="console.command_loader" class="Symfony\Component\Console\CommandLoader\ContainerCommandLoader" public="true">
       <tag name="container.no_preload"/>
-      <argument type="service" id=".service_locator.T.vApQL"/>
+      <argument type="service" id=".service_locator.UPRMWsu"/>
       <argument type="collection">
         <argument key="about">console.command.about</argument>
         <argument key="assets:install">console.command.assets_install</argument>
@@ -6404,6 +6772,8 @@
         <argument key="lexik:jwt:generate-token">lexik_jwt_authentication.generate_token_command</argument>
         <argument key="lexik:jwt:generate-keypair">lexik_jwt_authentication.generate_keypair_command</argument>
         <argument key="nelmio:apidoc:dump">nelmio_api_doc.command.dump</argument>
+        <argument key="debug:twig">twig.command.debug</argument>
+        <argument key="lint:twig">twig.command.lint</argument>
         <argument key="make:auth">maker.auto_command.make_auth</argument>
         <argument key="make:command">maker.auto_command.make_command</argument>
         <argument key="make:twig-component">maker.auto_command.make_twig_component</argument>
@@ -6433,7 +6803,7 @@
         <argument key="make:security:form-login">maker.auto_command.make_security_form_login</argument>
       </argument>
     </service>
-    <service id=".service_locator.T.vApQL" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator.UPRMWsu" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
         <argument key="console.command.about" type="service_closure" id=".console.command.about.lazy"/>
@@ -6504,6 +6874,8 @@
         <argument key="lexik_jwt_authentication.generate_token_command" type="service_closure" id=".lexik_jwt_authentication.generate_token_command.lazy"/>
         <argument key="lexik_jwt_authentication.generate_keypair_command" type="service_closure" id=".lexik_jwt_authentication.generate_keypair_command.lazy"/>
         <argument key="nelmio_api_doc.command.dump" type="service_closure" id="nelmio_api_doc.command.dump"/>
+        <argument key="twig.command.debug" type="service_closure" id=".twig.command.debug.lazy"/>
+        <argument key="twig.command.lint" type="service_closure" id=".twig.command.lint.lazy"/>
         <argument key="maker.auto_command.make_auth" type="service_closure" id=".maker.auto_command.make_auth.lazy"/>
         <argument key="maker.auto_command.make_command" type="service_closure" id=".maker.auto_command.make_command.lazy"/>
         <argument key="maker.auto_command.make_twig_component" type="service_closure" id=".maker.auto_command.make_twig_component.lazy"/>
@@ -6530,6 +6902,14 @@
         <argument key="maker.auto_command.make_security_form_login" type="service_closure" id=".maker.auto_command.make_security_form_login.lazy"/>
       </argument>
     </service>
+    <service id=".service_locator.VMK2iOS" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator"/>
+      <argument type="collection">
+        <argument key="Symfony\Bridge\Twig\Extension\CsrfRuntime" type="service_closure" id="twig.runtime.security_csrf"/>
+        <argument key="Symfony\Bridge\Twig\Extension\HttpKernelRuntime" type="service_closure" id="twig.runtime.httpkernel"/>
+        <argument key="Symfony\Bridge\Twig\Extension\SerializerRuntime" type="service_closure" id="twig.runtime.serializer"/>
+      </argument>
+    </service>
     <service id="App\Kernel" alias="kernel" public="true"/>
     <service id="Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface" alias="parameter_bag"/>
     <service id="Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface" alias="parameter_bag"/>
@@ -6552,7 +6932,7 @@
     <service id="Symfony\Component\Clock\ClockInterface" alias="clock"/>
     <service id="Psr\Clock\ClockInterface" alias="clock"/>
     <service id="Symfony\Component\HttpKernel\Fragment\FragmentUriGeneratorInterface" alias="fragment.uri_generator"/>
-    <service id="error_renderer.html" alias="error_handler.error_renderer.html"/>
+    <service id="error_renderer.html" alias="twig.error_renderer.html"/>
     <service id="error_renderer" alias="error_handler.error_renderer.serializer"/>
     <service id=".Psr\Container\ContainerInterface $parameter_bag" alias="parameter_bag"/>
     <service id="Psr\Container\ContainerInterface $parameterBag" alias="parameter_bag"/>
@@ -6560,6 +6940,7 @@
     <service id="Psr\Cache\CacheItemPoolInterface" alias="cache.app"/>
     <service id="Symfony\Contracts\Cache\CacheInterface" alias="cache.app"/>
     <service id="Symfony\Contracts\Cache\TagAwareCacheInterface" alias="cache.app.taggable"/>
+    <service id="Symfony\Component\Asset\Packages" alias="assets.packages"/>
     <service id="Symfony\Component\ErrorHandler\ErrorRenderer\FileLinkFormatter" alias="debug.file_link_formatter"/>
     <service id="Symfony\Component\Stopwatch\Stopwatch" alias="debug.stopwatch"/>
     <service id="routing.loader.annotation" alias="routing.loader.attribute">
@@ -6665,9 +7046,15 @@
     <service id="lexik_jwt_authentication.key_loader" alias="lexik_jwt_authentication.key_loader.raw" public="true"/>
     <service id="nelmio_api_doc.controller.swagger" alias="nelmio_api_doc.controller.swagger_json" public="true"/>
     <service id="nelmio_api_doc.generator" alias="nelmio_api_doc.generator.default" public="true"/>
+    <service id="Twig_Environment" alias="twig">
+      <deprecated package="symfony/twig-bundle" version="6.3">The "%alias_id%" service alias is deprecated, use "Twig\Environment" or "twig" instead.</deprecated>
+    </service>
+    <service id="Twig\Environment" alias="twig"/>
     <service id="container.env_var_processors_locator" alias=".service_locator.w7.f4fT" public="true"/>
-    <service id="argument_resolver.controller_locator" alias=".service_locator.cFIbj78"/>
+    <service id="twig.loader.filesystem" alias="twig.loader.native_filesystem"/>
+    <service id="argument_resolver.controller_locator" alias=".service_locator.tNsIPfq"/>
     <service id="doctrine.id_generator_locator" alias=".service_locator.KLVvNIq"/>
+    <service id="twig.loader" alias="twig.loader.native_filesystem"/>
     <service id="Psr\Log\LoggerInterface" alias="logger"/>
     <service id=".service_locator.Rlg80n6" alias=".service_locator.WfO.0Vv"/>
     <service id=".service_locator.9L433w3" alias="nelmio_api_doc.generator_locator"/>
@@ -6685,18 +7072,17 @@
     <service id=".service_locator.oW9ITiq" alias=".service_locator.dpqHdnm"/>
     <service id=".service_locator.hcy1RPt" alias=".service_locator.pFr8VsZ"/>
     <service id=".service_locator.sg6.tw6" alias=".service_locator.N5P0Wj7"/>
-    <service id=".service_locator.z20vLYS" alias=".service_locator.rKvDkjF"/>
-    <service id=".service_locator.fAbwk3N" alias=".service_locator.uS58GVi"/>
-    <service id=".service_locator.N1a53cJ" alias=".service_locator.gbncVNf"/>
+    <service id=".service_locator.am8NNvr" alias=".service_locator.vkx0CD5"/>
     <service id=".service_locator.AoLJ8hZ" alias=".service_locator.HSrsule"/>
     <service id=".service_locator.A7T6IO6" alias=".service_locator.fp3a.JX"/>
     <service id=".service_locator.nIcw_T9" alias=".service_locator.1mmku44"/>
+    <service id=".service_locator.8THzWfb" alias=".service_locator.qSf3P1l"/>
     <service id=".service_locator.g8cW29f" alias=".service_locator.MTytMZ4"/>
     <service id=".service_locator.wxZD2dV" alias=".service_locator.cZQUKxC"/>
     <service id=".service_locator.DxiWG9n" alias=".service_locator.Ii2msFJ"/>
     <service id=".service_locator.2x2f0KJ" alias=".service_locator.GF4LUwf"/>
     <service id=".service_locator.lmaQmz7" alias=".service_locator.RGXR_1y"/>
-    <service id=".service_locator.Ar6jRY2" alias=".service_locator.cFIbj78"/>
+    <service id=".service_locator.vcx6B7d" alias=".service_locator.tNsIPfq"/>
     <service id=".service_locator.BFrsqsn" alias=".service_locator.F9PKc.7"/>
     <service id=".service_locator.LMuqDDe" alias=".service_locator.VHsrTPK"/>
     <service id=".service_locator.jUv.zyj" alias=".service_locator.O2p6Lk7"/>
@@ -6707,6 +7093,7 @@
     <service id="security.access.decision_manager" alias="debug.security.access.decision_manager"/>
     <service id="security.firewall.authenticator.login" alias="debug.security.firewall.authenticator.login"/>
     <service id="security.firewall.authenticator.api" alias="debug.security.firewall.authenticator.api"/>
+    <service id="twig.error_renderer.html.inner" alias="error_handler.error_renderer.html"/>
     <service id="doctrine.orm.default_metadata_driver" alias=".doctrine.orm.default_metadata_driver"/>
     <service id="security.event_dispatcher.login" alias="debug.security.event_dispatcher.login"/>
     <service id="security.event_dispatcher.api" alias="debug.security.event_dispatcher.api"/>
@@ -6721,6 +7108,7 @@
     <service id=".service_locator.JJTOyjt" alias=".service_locator.SeLVk3G"/>
     <service id=".service_locator.Dqj8X0H" alias=".service_locator.jxInMaG"/>
     <service id=".service_locator.9e2t_lq" alias=".service_locator.CsMkqUa"/>
+    <service id=".service_locator.8oh0V46" alias=".service_locator.Wh7x.hE"/>
     <service id=".service_locator.v6WnAaZ" alias=".service_locator.eJmiWeB"/>
     <service id=".service_locator.RrsAnj." alias=".service_locator.FoeC1S9"/>
     <service id=".service_locator.XCHVLU_" alias=".service_locator.j3fuGrH"/>
@@ -6731,14 +7119,13 @@
     <service id=".service_locator.THuPZ.o" alias=".service_locator.dpqHdnm"/>
     <service id=".service_locator.LOOuRou" alias=".service_locator.pFr8VsZ"/>
     <service id=".service_locator.Y9ifXSz" alias=".service_locator.N5P0Wj7"/>
-    <service id=".service_locator.BXovOGh" alias=".service_locator.rKvDkjF"/>
-    <service id=".service_locator.mHkYvR8" alias=".service_locator.pwDx5_J"/>
-    <service id=".service_locator.Ge6eUsD" alias=".service_locator.uS58GVi"/>
-    <service id=".service_locator.pnE0CU4" alias=".service_locator.gbncVNf"/>
+    <service id=".service_locator.K4..t2r" alias=".service_locator.W4ACqPd"/>
+    <service id=".service_locator.nIMgVcC" alias=".service_locator.vkx0CD5"/>
     <service id=".service_locator.M6gy422" alias=".service_locator.eCRFt3Y"/>
     <service id=".service_locator.VSw7My0" alias=".service_locator.HSrsule"/>
     <service id=".service_locator.71FKAkZ" alias=".service_locator.fp3a.JX"/>
     <service id=".service_locator.gYvQWNA" alias=".service_locator.1mmku44"/>
+    <service id=".service_locator.16G0eWp" alias=".service_locator.qSf3P1l"/>
     <service id=".service_locator.Qpmh27g" alias=".service_locator.F_8iQf8"/>
     <service id=".service_locator.omiULW7" alias=".service_locator.MTytMZ4"/>
     <service id=".service_locator.x9j9DqO" alias=".service_locator.cZQUKxC"/>
@@ -6746,7 +7133,7 @@
     <service id=".service_locator.i0vIbCA" alias=".service_locator.Ii2msFJ"/>
     <service id=".service_locator.kDBjLT8" alias=".service_locator.GF4LUwf"/>
     <service id=".service_locator.quttN47" alias=".service_locator.RGXR_1y"/>
-    <service id=".service_locator.wCoTccS" alias=".service_locator.O2p6Lk7"/>
+    <service id=".service_locator.kHs.Tsl" alias=".service_locator.O2p6Lk7"/>
     <service id=".service_locator.dGUCsbe" alias=".service_locator.oR77BOj"/>
     <service id=".service_locator.Wt0f4Zb" alias=".service_locator.fLdGxkR"/>
     <service id=".service_locator.u6DWx23" alias=".service_locator.cXsfP3P"/>

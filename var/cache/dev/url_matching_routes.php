@@ -22,7 +22,7 @@ return [
             [['_route' => 'app_contrat_piece_post', '_controller' => 'App\\Controller\\ContratPieceController::create'], null, ['POST' => 0], null, false, false, null],
             [['_route' => 'app_contrat_piece_delete', '_controller' => 'App\\Controller\\ContratPieceController::delete'], null, ['DELETE' => 0], null, false, false, null],
         ],
-        '/dowload/files' => [[['_route' => 'app.index', '_controller' => 'App\\Controller\\DowloadFilesController::index'], null, null, null, false, false, null]],
+        '/api/filesAll' => [[['_route' => 'Download.GetAll', '_controller' => 'App\\Controller\\DowloadFilesController::GetAllImage'], null, ['GET' => 0], null, false, false, null]],
         '/api/files' => [[['_route' => 'app_dowload_files', '_controller' => 'App\\Controller\\DowloadFilesController::createFile'], null, ['POST' => 0], null, false, false, null]],
         '/api/marqueController' => [
             [['_route' => 'marqueVehicule.GetAll', '_controller' => 'App\\Controller\\MarqueVehiculeController::GetAllMarque'], null, ['GET' => 0], null, false, false, null],
@@ -32,17 +32,14 @@ return [
             [['_route' => 'ModeleVehicule.GetAll', '_controller' => 'App\\Controller\\ModeleVehiculeController::GetModeleVehiculeAll'], null, ['GET' => 0], null, false, false, null],
             [['_route' => 'ModeleVehicule.Create', '_controller' => 'App\\Controller\\ModeleVehiculeController::createModeleVehicule'], null, ['POST' => 0], null, false, false, null],
         ],
-        '/api/monControllerT' => [
-            [['_route' => 'modeleTests.GetAll', '_controller' => 'App\\Controller\\MonController::GetAllModele'], null, ['GET' => 0], null, false, false, null],
-            [['_route' => 'modeleTests.Create', '_controller' => 'App\\Controller\\MonController::creatModelsTest'], null, ['POST' => 0], null, false, false, null],
-        ],
+        '/api/monControllerT' => [[['_route' => 'modeleTests.Create', '_controller' => 'App\\Controller\\MonController::creatModelsTest'], null, ['POST' => 0], null, false, false, null]],
         '/api/PieceController' => [
             [['_route' => 'Pieces.GetAll', '_controller' => 'App\\Controller\\PieceController::GetAllPiece'], null, ['GET' => 0], null, false, false, null],
             [['_route' => 'Pieces.Create', '_controller' => 'App\\Controller\\PieceController::createPiece'], null, ['POST' => 0], null, false, false, null],
         ],
-        '/api/PieceEtModele' => [[['_route' => 'app_piece_modele_get_all', '_controller' => 'App\\Controller\\PieceModeleController::getAll'], null, ['GET' => 0], null, false, false, null]],
-        '/PieceEtModele' => [
-            [['_route' => 'app_modele_piece_post', '_controller' => 'App\\Controller\\PieceModeleController::create'], null, ['POST' => 0], null, false, false, null],
+        '/api/PieceEtModele' => [
+            [['_route' => 'app_piece_modele_get_all', '_controller' => 'App\\Controller\\PieceModeleController::getAll'], null, ['GET' => 0], null, false, false, null],
+            [['_route' => 'app_modele_piece_post', '_controller' => 'App\\Controller\\PieceModeleController::createPieceModel'], null, ['POST' => 0], null, false, false, null],
             [['_route' => 'app_modele_piece_delete', '_controller' => 'App\\Controller\\PieceModeleController::delete'], null, ['DELETE' => 0], null, false, false, null],
         ],
         '/api/TypePieceController' => [
@@ -82,21 +79,23 @@ return [
                             .')'
                         .')'
                     .')'
-                    .'|PieceController/([^/]++)(?'
-                        .'|(*:312)'
+                    .'|Piece(?'
+                        .'|Controller/([^/]++)(?'
+                            .'|(*:315)'
+                        .')'
+                        .'|EtModele/([^/]++)/([^/]++)(*:350)'
                     .')'
                     .'|TypePieceController/([^/]++)(?'
-                        .'|(*:352)'
+                        .'|(*:390)'
                     .')'
                     .'|UtilisateurMecano(?'
                         .'|Controller/([^/]++)(?'
-                            .'|(*:403)'
+                            .'|(*:441)'
                         .')'
-                        .'|/([^/]++)(*:421)'
+                        .'|/([^/]++)(*:459)'
                     .')'
                 .')'
-                .'|/contratEtPiece/([^/]++)/([^/]++)(*:464)'
-                .'|/PieceEtModele/([^/]++)/([^/]++)(*:504)'
+                .'|/contratEtPiece/([^/]++)/([^/]++)(*:502)'
             .')/?$}sDu',
     ],
     [ // $dynamicRoutes
@@ -126,24 +125,24 @@ return [
             [['_route' => 'modeleTests.delete', '_controller' => 'App\\Controller\\MonController::deleteModeleUnique'], ['id'], ['DELETE' => 0], null, false, true, null],
             [['_route' => 'modeleTests.update', '_controller' => 'App\\Controller\\MonController::updateModeleUnique'], ['id'], ['PATCH' => 0, 'PUT' => 1], null, false, true, null],
         ],
-        312 => [
+        315 => [
             [['_route' => 'Pieces.Get', '_controller' => 'App\\Controller\\PieceController::GetPiece'], ['id'], ['GET' => 0], null, false, true, null],
             [['_route' => 'Pieces.delete', '_controller' => 'App\\Controller\\PieceController::deletePiece'], ['id'], ['DELETE' => 0], null, false, true, null],
             [['_route' => 'Pieces.update', '_controller' => 'App\\Controller\\PieceController::updatePiece'], ['id'], ['PATCH' => 0, 'PUT' => 1], null, false, true, null],
         ],
-        352 => [
+        350 => [[['_route' => 'app_piece_modele_get_one', '_controller' => 'App\\Controller\\PieceModeleController::getOne'], ['modeleId', 'pieceId'], ['GET' => 0], null, false, true, null]],
+        390 => [
             [['_route' => 'TypePiece.Get', '_controller' => 'App\\Controller\\TypePieceController::GetUneTypePiece'], ['id'], ['GET' => 0], null, false, true, null],
             [['_route' => 'TypePiece.delete', '_controller' => 'App\\Controller\\TypePieceController::deletePiece'], ['id'], ['DELETE' => 0], null, false, true, null],
             [['_route' => 'TypePiece.update', '_controller' => 'App\\Controller\\TypePieceController::updatePiece'], ['id'], ['PATCH' => 0, 'PUT' => 1], null, false, true, null],
         ],
-        403 => [
+        441 => [
             [['_route' => 'UtilisateurMecano.Get', '_controller' => 'App\\Controller\\UtilisateurMecanoController::GetUneUtilisateurMecano'], ['id'], ['GET' => 0], null, false, true, null],
             [['_route' => 'UtilisateurMecano.delete', '_controller' => 'App\\Controller\\UtilisateurMecanoController::deleteUtilisateurMecano'], ['id'], ['DELETE' => 0], null, false, true, null],
         ],
-        421 => [[['_route' => 'UtilisateurMecano.update', '_controller' => 'App\\Controller\\UtilisateurMecanoController::updateMarqueVehicule'], ['id'], ['PATCH' => 0, 'PUT' => 1], null, false, true, null]],
-        464 => [[['_route' => 'app_contrat_piece_get', '_controller' => 'App\\Controller\\ContratPieceController::getOne'], ['contratId', 'pieceId'], ['GET' => 0], null, false, true, null]],
-        504 => [
-            [['_route' => 'app_piece_modele_get_one', '_controller' => 'App\\Controller\\PieceModeleController::getOne'], ['modeleId', 'pieceId'], ['GET' => 0], null, false, true, null],
+        459 => [[['_route' => 'UtilisateurMecano.update', '_controller' => 'App\\Controller\\UtilisateurMecanoController::updateMarqueVehicule'], ['id'], ['PATCH' => 0, 'PUT' => 1], null, false, true, null]],
+        502 => [
+            [['_route' => 'app_contrat_piece_get', '_controller' => 'App\\Controller\\ContratPieceController::getOne'], ['contratId', 'pieceId'], ['GET' => 0], null, false, true, null],
             [null, null, null, null, false, false, 0],
         ],
     ],

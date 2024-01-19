@@ -9,10 +9,14 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Security;
+use OpenApi\Attributes as OA;
 class ContratPieceController extends AbstractController
 {
     #[Route('/contratEtPiece', name: 'app_contrat_piece_get_all', methods: ['GET'])]
+
+    #[OA\Tag(name: 'Contract')]
     public function getAll(EntityManagerInterface $entityManager): JsonResponse
     {
         $associations = $entityManager->getRepository(Contrat::class)->findAll();
@@ -43,6 +47,7 @@ class ContratPieceController extends AbstractController
         return new JsonResponse($result, JsonResponse::HTTP_OK);
     }
     #[Route('/contratEtPiece/{contratId}/{pieceId}', name: 'app_contrat_piece_get', methods: ['GET'])]
+    #[OA\Tag(name: 'Contract')]
     public function getOne(int $contratId, int $pieceId, EntityManagerInterface $entityManager): JsonResponse
     {
         $contrat = $entityManager->getRepository(Contrat::class)->find($contratId);
@@ -71,6 +76,7 @@ class ContratPieceController extends AbstractController
         return new JsonResponse($result, JsonResponse::HTTP_OK);
     }
     #[Route('/contratEtPiece', name: 'app_contrat_piece_post', methods: ['POST'])]
+    #[OA\Tag(name: 'Contract')]
     public function create(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
@@ -90,6 +96,7 @@ class ContratPieceController extends AbstractController
         return new JsonResponse(['message' => 'Association créée avec succès'], JsonResponse::HTTP_CREATED);
     }
     #[Route('/contratEtPiece', name: 'app_contrat_piece_delete', methods: ['DELETE'])]
+    #[OA\Tag(name: 'Contract')]
     public function delete(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
         $data = json_decode($request->getContent(), true);

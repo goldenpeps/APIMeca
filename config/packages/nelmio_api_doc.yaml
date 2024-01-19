@@ -1,8 +1,8 @@
 nelmio_api_doc:
     documentation:
         info:
-            title: Atelier du Bien etre
-            description: l'API du site
+            title: Ewan on the floor
+            description: a laide
             version: 2.0.0
         paths:
             /api/login_check:
@@ -37,15 +37,17 @@ nelmio_api_doc:
                     properties:
                         username:
                             type: string
-                            default: public
+                            default: public@public
                         password:
                             type: string
                             default: public
             securitySchemes:
-                bearerAuth:
-                    type: apiKey
-                    in: header
-                    name: Authorization # or another header name
+                Bearer:
+                    type: http
+                    scheme: bearer
+                    bearerFormat: JWT
+        security:
+            - Bearer: []
     areas: # to filter documented areas
         path_patterns:
-            - ^/api(?!/doc$) # Accepts routes under /api except /api/doc
+            - ^/api(?!/doc$) # Accepts routes under /api except /api/doc 

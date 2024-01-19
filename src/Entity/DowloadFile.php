@@ -2,13 +2,14 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\DowloadFileRepository;
+use Doctrine\Common\Collections\Collection;
 use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\String\Slugger\AsciiSlugger;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 #[ORM\Entity(repositoryClass: DowloadFileRepository::class)]
 class DowloadFile
@@ -16,27 +17,33 @@ class DowloadFile
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups("id")]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups("name")]
     private ?string $name = null;
+    
 
     #[ORM\Column(length: 255)]
+    #[Groups("realName")]
     private ?string $realName = null;
 
 
     #[ORM\Column(length: 255)]
+    #[Groups("slug")]
     private ?string $slug = null;
 
     private ?File $file = null;
 
     #[ORM\Column(length: 255)]
     private ?string $mimeType = null;
+    #[Groups("mimeType")]
 
     #[ORM\Column(length: 255)]
     private ?string $publicpath = null;
 
-
+    #[Groups("etat")]
     #[ORM\Column(length: 255)]
     private ?string $etat = null;
 

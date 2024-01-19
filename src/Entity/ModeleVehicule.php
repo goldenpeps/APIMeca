@@ -31,6 +31,7 @@ class ModeleVehicule
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups("id")]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
@@ -38,18 +39,23 @@ class ModeleVehicule
     private ?string $Nom = null;
 
     #[ORM\Column]
+    #[Groups("Annee")]
     private ?int $Annee = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups("Version")]
     private ?string $Version = null;
  
     #[ORM\ManyToMany(targetEntity: Piece::class, mappedBy: 'Assosiative_PieceModeleVehicule')]  
-  
+    #[Groups("Assosiative_ModeleVehiculePiece")]
     private Collection $Assosiative_ModeleVehiculePiece;
+    
 
     #[ORM\ManyToOne(inversedBy: 'referenceModeleVehicules')]
-  
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups("id_marqueVehicule")]
     private ?MarqueVehicule $id_marqueVehicule = null;
+
 
     public function __construct()
     {

@@ -18,6 +18,9 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Security;
+use OpenApi\Attributes as OA;
 
 class AutreController extends AbstractController
     {
@@ -31,6 +34,7 @@ class AutreController extends AbstractController
         }
     
         #[Route('/api/AutreControllerT', name: 'monTypeT.GetAll',methods:["GET"])]
+        #[OA\Tag(name: 'Ne pas tester exercice')]
        
         public function GetAllType(MonTypeTRepository $repository, SerializerInterface $serializer ): JsonResponse
         {
@@ -44,6 +48,7 @@ class AutreController extends AbstractController
             // ]);
         }
         #[Route('/api/AutreControllerT/{id}', name: 'monTypeT.Get',methods:["GET"])]
+        #[OA\Tag(name: 'Ne pas tester exercice')]
         public function GetModeleUnique(int  $id,MonTypeTRepository $repositoryMonType,  ModeleTestRepository $repositoryModeleTest, SerializerInterface $serializer ): JsonResponse
         {
             $modeleTest = $repositoryMonType->find($id);
@@ -57,6 +62,7 @@ class AutreController extends AbstractController
         }
         //recuper plusieur donné
         #[Route('/api/AutreControllerT', name: 'monTypeT.Create',methods:["POST"])]
+        #[OA\Tag(name: 'Ne pas tester exercice')]
         public function creatModelsTest(Request $request, ModeleTestRepository $repository,EntityManagerInterface $entityManager, UrlGeneratorInterface $interfaceUrl ,SerializerInterface $serializer ): JsonResponse
         {
            
@@ -73,6 +79,7 @@ class AutreController extends AbstractController
         }
         //suprimer donnée
         #[Route('/api/AutreControllerT/{id}', name: 'monTypeT.delete',methods:["DELETE"])]
+        #[OA\Tag(name: 'Ne pas tester exercice')]
         public function deleteModeleUnique(int  $id, ModeleTestRepository $repository,EntityManagerInterface $entityManager ): JsonResponse
         {
             $modeleTest = $repository->find($id);
@@ -87,6 +94,7 @@ class AutreController extends AbstractController
         }
         //mis a jour  
         #[Route('/api/AutreControllerT/{id}', name: 'monTypeT.update',methods:["PATCH","PUT"])]
+        #[OA\Tag(name: 'Ne pas tester exercice')]
         public function updateModeleUnique(int  $id, Request $request, ModeleTestRepository $repository,EntityManagerInterface $entityManager ,SerializerInterface $serializer ): JsonResponse
         {
             $modeleTest = $repository->find($id);

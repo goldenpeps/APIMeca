@@ -14,25 +14,46 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use DateTimeImmutable;
-
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Security;
+use OpenApi\Attributes as OA;
 class UtilisateurMecanoController extends AbstractController
 {
     #[Route('/api/UtilisateurMecanoController', name: 'UtilisateurMecano.GetAll',methods:["GET"])]
+    #[OA\Response(
+        response: 200,
+        description: 'Returns the rewards of an user',
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(ref: new Model(type: UtilisateurMecano::class, groups: ["id","GetNom", "GetPrenom"] ))
+        )
+    )]
+    #[OA\Tag(name: 'utilisateur Mecano')]
     public function GetAllUtilisateurMecano(UtilisateurMecanoRepository $repositoryUM, SerializerInterface $serializer ): JsonResponse
     {
         $utilisateurMecanoAll = $repositoryUM->findAll();
-        $jsonUtilisateurMecanoAll = $serializer->serialize($utilisateurMecanoAll,'json', ["groups" => ["GetNom", "GetPrenom"]]);
+        $jsonUtilisateurMecanoAll = $serializer->serialize($utilisateurMecanoAll,'json', ["groups" => ["id","GetNom", "GetPrenom"]]);
          return new JsonResponse($jsonUtilisateurMecanoAll, Response::HTTP_OK,[],true);
     }
 
     #[Route('/api/UtilisateurMecanoController/{id}', name: 'UtilisateurMecano.Get',methods:["GET"])]
+    #[OA\Response(
+        response: 200,
+        description: 'Returns the rewards of an user',
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(ref: new Model(type: UtilisateurMecano::class, groups: ["id","GetNom", "GetPrenom"] ))
+        )
+    )]
+    #[OA\Tag(name: 'utilisateur Mecano')]
     public function GetUneUtilisateurMecano(int  $id, UtilisateurMecanoRepository $repositoryUM, SerializerInterface $serializer ): JsonResponse
     {
         $utilisateurMecano = $repositoryUM->find($id);
-        $jsonUtilisateurMecano = $serializer->serialize($utilisateurMecano,'json');
+        $jsonUtilisateurMecano = $serializer->serialize($utilisateurMecano,'json', ["groups" => ["id","GetNom", "GetPrenom"]]);
          return new JsonResponse($jsonUtilisateurMecano, Response::HTTP_OK,[],true);
     }
     #[Route('/api/UtilisateurMecanoController', name: 'UtilisateurMecano.Create',methods:["POST"])]
+    #[OA\Tag(name: 'utilisateur Mecano')]
     public function createUtilisateurMecano(Request $request, UtilisateurMecanoRepository $repositoryUM,EntityManagerInterface $entityManager, UrlGeneratorInterface $interfaceUrl ,SerializerInterface $serializer ): JsonResponse
     {
         $utilisateurMecano = $serializer->deserialize($request->getContent(),UtilisateurMecano::class,'json');
@@ -47,6 +68,7 @@ class UtilisateurMecanoController extends AbstractController
     }
 
     #[Route('/api/UtilisateurMecanoController/{id}', name: 'UtilisateurMecano.delete',methods:["DELETE"])]
+    #[OA\Tag(name: 'utilisateur Mecano')]
     public function deleteUtilisateurMecano(Request $request, int  $id, UtilisateurMecanoRepository $repositoryUM,EntityManagerInterface $entityManager ): JsonResponse
     {
         // $utilisateurMecano = $repositoryUM->find($id);
@@ -72,6 +94,7 @@ class UtilisateurMecanoController extends AbstractController
     }
 
     #[Route('/api/UtilisateurMecano/{id}', name: 'UtilisateurMecano.update',methods:["PATCH","PUT"])]
+    #[OA\Tag(name: 'utilisateur Mecano')]
     public function updateMarqueVehicule(int  $id, Request $request, UtilisateurMecanoRepository $repositoryUM,EntityManagerInterface $entityManager ,SerializerInterface $serializer ): JsonResponse
     {
         $utilisateurMecano = $repositoryUM->find($id);
